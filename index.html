@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>交易知识地图</title>
+<!-- PWA 配置 -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1a1a2e" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="交易知识地图" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="mask-icon" href="icon.svg" color="#1a1a2e" />
+<meta name="mobile-web-app-capable" content="yes" />
+<!-- 启动屏描述（iOS用） -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /><style>
+:root {
+  --bg: #f8f7f4; --card-bg: #ffffff; --text-primary: #1a1a2e;
+  --text-secondary: #6b7280; --text-muted: #9ca3af; --gold: #c8a44a;
+  --gold-light: #fef9ed; --gold-border: #e8d5a0; --border: #e5e7eb;
+  --border-light: #f0f0f0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --radius: 12px; --radius-sm: 8px;
+  --font-display: Georgia,"PingFang SC","Noto Serif CJK SC",serif;
+  --font-body: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --font-mono: "SF Mono","Menlo","Monaco",monospace;
+  --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:calc(40px + var(--safe-bottom));overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.008) 2px,rgba(0,0,0,0.008) 4px);pointer-events:none;z-index:0}
+
+.header{position:relative;z-index:10;padding:calc(28px + var(--safe-top)) 24px 20px;background:var(--card-bg);border-bottom:1px solid var(--border-light)}
+.header::after{content:'';position:absolute;bottom:-1px;left:24px;right:24px;height:3px;background:linear-gradient(90deg,var(--gold) 0%,transparent 100%);border-radius:2px;opacity:.6}
+.header h1{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:1px;color:var(--text-primary);line-height:1.2}
+.header h1 span{color:var(--gold)}
+.header .subtitle{font-size:13px;color:var(--text-secondary);margin-top:4px;letter-spacing:.3px}
+.header .badge{display:inline-block;font-size:10px;color:var(--gold);border:1px solid var(--gold-border);border-radius:4px;padding:1px 7px;margin-top:6px;letter-spacing:.3px;font-family:var(--font-mono)}
+
+.progress-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:100;background:transparent}
+.progress-bar .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#dbb85a);transition:width 100ms ease;border-radius:0 2px 2px 0}
+
+.tabs{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light);display:flex;padding:0 16px}
+.tabs .tab{flex:1;text-align:center;padding:14px 8px 12px;font-size:15px;font-weight:500;color:var(--text-muted);border:none;background:none;cursor:pointer;position:relative;transition:color .2s;-webkit-tap-highlight-color:transparent;outline:none;font-family:var(--font-body)}
+.tabs .tab::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%) scaleX(0);width:40%;height:2.5px;background:var(--text-primary);border-radius:2px;transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.tabs .tab.active{color:var(--text-primary);font-weight:600}
+.tabs .tab.active::after{transform:translateX(-50%) scaleX(1)}.tabs .tab:active{opacity:.7}
+
+.content{position:relative;z-index:1;padding:12px 14px 40px;max-width:500px;margin:0 auto}
+.module{display:none;animation:fadeSlideIn .35s ease}.module.active{display:block}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.thread-header{display:flex;align-items:center;gap:10px;margin:20px 0 12px;padding:0 2px}
+.thread-header:first-of-type{margin-top:2px}
+.thread-header .icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.thread-header .icon.fundamental{background:#eef2ff;color:#6366f1}
+.thread-header .icon.technical{background:#fef3c7;color:#d97706}
+.thread-header h2{font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:.3px}
+.thread-header .count{font-size:11px;color:var(--text-muted);font-family:var(--font-mono);margin-left:auto}
+
+.card-wrap{margin-bottom:10px;opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.card-wrap.visible{opacity:1;transform:translateY(0)}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .25s ease}
+.card:active{box-shadow:var(--shadow-hover)}
+.card-header{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 14px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .2s}
+.card-header:active{background:rgba(0,0,0,.02)}
+.card-header .num{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);min-width:20px;font-weight:500}
+.card-header .title{flex:1;font-size:14px;font-weight:500;color:var(--text-primary);line-height:1.3}
+.card-header .arrow{font-size:11px;color:var(--text-muted);transition:transform .3s cubic-bezier(.22,1,.36,1);flex-shrink:0}
+.card.open .card-header .arrow{transform:rotate(180deg)}
+.card-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1),padding .3s ease;padding:0 14px}
+.card.open .card-body{max-height:2500px;padding:0 14px 14px}
+
+.card-body .brief{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border-light)}
+.card-body .section-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;display:flex;align-items:center;gap:6px}
+.card-body .section-label::after{content:'';flex:1;height:1px;background:var(--border-light)}
+.card-body .practical-box{font-size:12.5px;line-height:1.7;background:#f0f7ff;border-left:3px solid #6366f1;padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:10px;color:#374151}
+.card-body .ref-box{font-size:12.5px;line-height:1.7;background:#f5f3ff;border-left:3px solid #8b5cf6;padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:10px;color:#374151}
+.card-body .combo-box{font-size:12.5px;line-height:1.7;background:#f0fdf4;border-left:3px solid #22c55e;padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:10px;color:#374151}
+.card-body .tag-case,.card-body .tag-boundary{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:6px;letter-spacing:.3px}
+.card-body .tag-case{background:var(--gold-light);color:#8b6e2a;border:1px solid var(--gold-border)}
+.card-body .tag-boundary{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+.card-body .case-box,.card-body .boundary-box{font-size:12.5px;line-height:1.7;padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:10px}
+.card-body .case-box{background:var(--gold-light);border-left:3px solid var(--gold);color:#5a4a2a}
+.card-body .boundary-box{background:#f9fafb;border-left:3px solid #d1d5db;color:#4b5563}
+.card-body .case-box:last-child,.card-body .boundary-box:last-child{margin-bottom:0}
+.card-body .num-highlight{font-weight:700;color:#dc2626}
+.card-body .num-gold{font-weight:700;color:var(--gold)}
+
+.card-body .diagram-box{background:#fafaf8;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;margin-bottom:10px;text-align:center}
+.card-body .diagram-box svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.card-body .diagram-caption{font-size:11px;color:var(--text-muted);margin-top:4px;letter-spacing:.2px}
+
+.footer{text-align:center;padding:24px 16px 32px;font-size:12px;color:var(--text-muted);line-height:1.6;max-width:500px;margin:0 auto;border-top:1px solid var(--border-light)}
+.footer strong{color:var(--text-secondary);font-weight:500}
+
+@media(min-width:430px){
+  .content{padding:16px 20px 48px}
+  .header{padding:calc(32px + var(--safe-top)) 28px 24px}
+  .header h1{font-size:30px}
+  .card-header{padding:14px 14px 14px 18px}
+  .card-body .brief{font-size:13.5px}
+  .card.open .card-body{max-height:3000px;padding:0 18px 18px}
+}
+.card-wrap{will-change:opacity,transform}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+
+<header class="header">
+  <h1>交易<span>知识</span>地图</h1>
+  <p class="subtitle">基本面 × 技术分析 · 股票 / 债券 / 期货 · 实战交易指南</p>
+  <span class="badge">v2.0 · 50 个实战知识点 · 含图解</span>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-module="stocks">股票</button>
+  <button class="tab" data-module="bonds">债券</button>
+  <button class="tab" data-module="futures">期货</button>
+</nav>
+
+<div class="content" id="content"></div>
+
+<footer class="footer">
+  <strong>⚠️ 风险提示：</strong>本文内容仅供学习参考，不构成投资建议。<br>
+  市场有风险，交易需谨慎。过往表现不代表未来收益。
+</footer>
+
+<script>
+// SVG 图表生成器
+const DIAGRAMS = {
+  merrillClock: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <!-- 十字轴 -->
+    <line x1="170" y1="20" x2="170" y2="170" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="30" y1="95" x2="310" y2="95" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+    <!-- 轴标签 -->
+    <text x="310" y="90" font-size="9" fill="#9ca3af" text-anchor="end">经济增长→</text>
+    <text x="175" y="18" font-size="9" fill="#9ca3af" text-anchor="middle">通胀→</text>
+    <!-- 衰退 (债券) -->
+    <rect x="45" y="25" width="110" height="60" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="100" y="50" font-size="12" font-weight="700" fill="#4338ca" text-anchor="middle">衰 退</text>
+    <text x="100" y="66" font-size="10" fill="#6366f1" text-anchor="middle">低增长·低通胀</text>
+    <text x="100" y="80" font-size="11" fill="#dc2626" text-anchor="middle">★ 债券最佳</text>
+    <!-- 复苏 (股票) -->
+    <rect x="185" y="25" width="110" height="60" rx="8" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="240" y="50" font-size="12" font-weight="700" fill="#16a34a" text-anchor="middle">复 苏</text>
+    <text x="240" y="66" font-size="10" fill="#22c55e" text-anchor="middle">高增长·低通胀</text>
+    <text x="240" y="80" font-size="11" fill="#dc2626" text-anchor="middle">★ 股票最佳</text>
+    <!-- 过热 (商品) -->
+    <rect x="185" y="105" width="110" height="60" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+    <text x="240" y="130" font-size="12" font-weight="700" fill="#d97706" text-anchor="middle">过 热</text>
+    <text x="240" y="146" font-size="10" fill="#d97706" text-anchor="middle">高增长·高通胀</text>
+    <text x="240" y="160" font-size="11" fill="#dc2626" text-anchor="middle">★ 商品最佳</text>
+    <!-- 滞胀 (现金) -->
+    <rect x="45" y="105" width="110" height="60" rx="8" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="100" y="130" font-size="12" font-weight="700" fill="#9333ea" text-anchor="middle">滞 胀</text>
+    <text x="100" y="146" font-size="10" fill="#a855f7" text-anchor="middle">低增长·高通胀</text>
+    <text x="100" y="160" font-size="11" fill="#dc2626" text-anchor="middle">★ 现金最佳</text>
+  </svg>`,
+
+  candlestick: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <!-- 背景网格 -->
+    <line x1="30" y1="35" x2="310" y2="35" stroke="#f0f0f0" stroke-width="1"/>
+    <line x1="30" y1="70" x2="310" y2="70" stroke="#f0f0f0" stroke-width="1"/>
+    <line x1="30" y1="105" x2="310" y2="105" stroke="#f0f0f0" stroke-width="1"/>
+    <line x1="30" y1="140" x2="310" y2="140" stroke="#f0f0f0" stroke-width="1"/>
+    <!-- 锤子线 -->
+    <line x1="60" y1="80" x2="60" y2="160" stroke="#dc2626" stroke-width="2"/>
+    <rect x="48" y="80" width="24" height="40" rx="2" fill="#dc2626" stroke="#dc2626" stroke-width="1.5"/>
+    <text x="60" y="177" font-size="8" fill="#9ca3af" text-anchor="middle">锤子线</text>
+    <!-- 吞没形态 -->
+    <rect x="110" y="90" width="16" height="40" rx="2" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+    <rect x="105" y="70" width="36" height="20" rx="2" fill="#dc2626" stroke="#dc2626" stroke-width="1.5" opacity=".5"/>
+    <line x1="123" y1="55" x2="123" y2="70" stroke="#dc2626" stroke-width="1.5"/>
+    <line x1="123" y1="90" x2="123" y2="100" stroke="#16a34a" stroke-width="1"/>
+    <text x="128" y="177" font-size="8" fill="#9ca3af" text-anchor="middle">阳吞阴</text>
+    <!-- 十字星 -->
+    <rect x="185" y="80" width="4" height="4" rx="1" fill="#6b7280"/>
+    <line x1="187" y1="55" x2="187" y2="80" stroke="#6b7280" stroke-width="1.5"/>
+    <line x1="187" y1="84" x2="187" y2="110" stroke="#6b7280" stroke-width="1.5"/>
+    <text x="187" y="177" font-size="8" fill="#9ca3af" text-anchor="middle">十字星</text>
+    <!-- 上升趋势示意 -->
+    <polyline points="250,140 280,100 310,60" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,3"/>
+    <rect x="250" y="95" width="18" height="45" rx="2" fill="#dc2626" stroke="#dc2626" stroke-width="1.5" opacity=".4"/>
+    <rect x="280" y="55" width="18" height="45" rx="2" fill="#16a34a" stroke="#16a34a" stroke-width="1.5"/>
+    <rect x="310" y="20" width="18" height="40" rx="2" fill="#16a34a" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="280" y="177" font-size="8" fill="#9ca3af" text-anchor="middle">上升三法</text>
+    <!-- 标注 -->
+    <text x="35" y="15" font-size="9" font-weight="600" fill="#374151">核心K线组合形态</text>
+  </svg>`,
+
+  supportResistance: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="20" font-size="10" font-weight="600" fill="#374151">支撑与阻力 · 顶底互换</text>
+    <!-- 阻力线 -->
+    <line x1="40" y1="45" x2="320" y2="45" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="325" y="49" font-size="9" fill="#dc2626">阻力 R</text>
+    <!-- 支撑线 -->
+    <line x1="40" y1="145" x2="320" y2="145" stroke="#16a34a" stroke-width="2" stroke-dasharray="6,3"/>
+    <text x="325" y="149" font-size="9" fill="#16a34a">支撑 S</text>
+    <!-- 价格走势 -->
+    <polyline points="50,110 80,70 110,90 140,55 170,80 200,45 220,60 240,45 260,100 280,140 310,145" fill="none" stroke="#374151" stroke-width="2"/>
+    <!-- 触碰点 -->
+    <circle cx="80" cy="70" r="4" fill="#dc2626"/>
+    <circle cx="140" cy="55" r="4" fill="#dc2626"/>
+    <circle cx="200" cy="45" r="4" fill="#dc2626"/>
+    <circle cx="240" cy="45" r="4" fill="#dc2626"/>
+    <circle cx="50" cy="110" r="4" fill="#16a34a"/>
+    <circle cx="110" cy="90" r="4" fill="#16a34a"/>
+    <circle cx="170" cy="80" r="4" fill="#16a34a"/>
+    <circle cx="260" cy="100" r="4" fill="#16a34a"/>
+    <circle cx="280" cy="140" r="4" fill="#16a34a"/>
+    <circle cx="310" cy="145" r="4" fill="#16a34a"/>
+    <!-- 突破标注 -->
+    <text x="275" y="135" font-size="8" fill="#dc2626" text-anchor="middle">跌破</text>
+    <line x1="260" y1="100" x2="260" y2="145" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
+    <!-- 箭头标注 -->
+    <polygon points="260,100 256,108 264,108" fill="#dc2626"/>
+  </svg>`,
+
+  movingAvg: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="20" font-size="10" font-weight="600" fill="#374151">均线系统 · 金叉死叉</text>
+    <!-- 价格线 -->
+    <polyline points="40,160 70,155 100,145 130,140 160,130 190,80 220,75 250,50 280,45 310,40" fill="none" stroke="#374151" stroke-width="2"/>
+    <!-- MA10 -->
+    <polyline points="40,155 70,150 100,148 130,145 160,140 190,120 220,110 250,85 280,75 310,70" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="315" y="72" font-size="8" fill="#6366f1">MA10</text>
+    <!-- MA60 -->
+    <polyline points="40,130 70,132 100,133 130,134 160,135 190,135 220,134 250,130 280,126 310,122" fill="none" stroke="#d97706" stroke-width="1.5"/>
+    <text x="315" y="124" font-size="8" fill="#d97706">MA60</text>
+    <!-- 金叉 -->
+    <circle cx="190" cy="135" r="12" fill="none" stroke="#16a34a" stroke-width="2"/>
+    <text x="190" y="138" font-size="9" font-weight="700" fill="#16a34a" text-anchor="middle">✓</text>
+    <text x="190" y="175" font-size="9" fill="#16a34a" text-anchor="middle" font-weight="600">金叉买入</text>
+    <!-- 死叉 -->
+    <circle cx="280" cy="85" r="12" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="280" y="88" font-size="9" font-weight="700" fill="#dc2626" text-anchor="middle">✗</text>
+    <text x="280" y="175" font-size="9" fill="#dc2626" text-anchor="middle" font-weight="600">死叉卖出</text>
+  </svg>`,
+
+  macdDivergence: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">MACD 顶背离 · 价创新高 指标未新高</text>
+    <!-- 价格走势 -->
+    <polyline points="50,150 80,120 110,135 140,90 170,105 200,55 230,70 260,45 290,60" fill="none" stroke="#374151" stroke-width="2"/>
+    <text x="260" y="40" font-size="9" fill="#374151" font-weight="600">价格新高</text>
+    <circle cx="260" cy="45" r="5" fill="#374151"/>
+    <!-- MACD 走势 -->
+    <polyline points="50,170 80,155 110,160 140,140 170,145 200,125 230,130 260,135 290,140" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="260" y="130" font-size="9" fill="#6366f1">MACD未创新高</text>
+    <circle cx="260" cy="135" r="5" fill="#6366f1"/>
+    <!-- 背离连接线 -->
+    <line x1="200" y1="55" x2="260" y2="45" stroke="#dc2626" stroke-width="1.5"/>
+    <line x1="200" y1="125" x2="260" y2="135" stroke="#16a34a" stroke-width="1.5"/>
+    <text x="145" y="118" font-size="8" fill="#dc2626">顶背离</text>
+  </svg>`,
+
+  bollinger: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="20" font-size="10" font-weight="600" fill="#374151">布林带 · 通道与突破</text>
+    <!-- 上轨 -->
+    <polyline points="40,40 100,45 160,30 220,35 280,25 300,30" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="305" y="33" font-size="8" fill="#dc2626">上轨</text>
+    <!-- 中轨 -->
+    <polyline points="40,80 100,85 160,75 220,80 280,70 300,75" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="305" y="78" font-size="8" fill="#6366f1">中轨 MA20</text>
+    <!-- 下轨 -->
+    <polyline points="40,120 100,125 160,115 220,120 280,110 300,115" fill="none" stroke="#16a34a" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="305" y="118" font-size="8" fill="#16a34a">下轨</text>
+    <!-- 价格走势 -->
+    <polyline points="50,65 80,70 110,50 140,80 170,75 200,100 230,65 260,30 290,60" fill="none" stroke="#374151" stroke-width="2"/>
+    <!-- 接触上轨 -->
+    <circle cx="260" cy="30" r="5" fill="#dc2626"/>
+    <text x="245" y="20" font-size="8" fill="#dc2626">触及轨</text>
+    <!-- 带宽收窄 -->
+    <rect x="130" y="36" width="40" height="78" rx="2" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="150" y="130" font-size="8" fill="#d97706" text-anchor="middle">带宽收窄<br/>待突破</text>
+    <!-- 填充区域 -->
+    <path d="M40,40 Q100,45 160,30 Q220,35 280,25 L300,30 L300,115 Q280,110 220,120 Q160,115 100,125 L40,120 Z" fill="rgba(200,164,74,0.05)"/>
+  </svg>`,
+
+  rsiChart: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">RSI 超买超卖与背离</text>
+    <!-- 超买线 70 -->
+    <line x1="30" y1="40" x2="320" y2="40" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="325" y="44" font-size="9" fill="#dc2626">70 超买</text>
+    <!-- 超卖线 30 -->
+    <line x1="30" y1="145" x2="320" y2="145" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="6,4"/>
+    <text x="325" y="149" font-size="9" fill="#16a34a">30 超卖</text>
+    <!-- 中轴线 50 -->
+    <line x1="30" y1="95" x2="320" y2="95" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="325" y="98" font-size="8" fill="#9ca3af">50</text>
+    <!-- RSI 走势 -->
+    <polyline points="40,130 70,110 100,120 130,80 160,90 190,50 220,35 250,55 280,45 310,70" fill="none" stroke="#6366f1" stroke-width="2"/>
+    <!-- RSI顶背离 -->
+    <line x1="190" y1="50" x2="280" y2="45" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
+    <circle cx="190" cy="50" r="4" fill="#6366f1"/>
+    <circle cx="280" cy="45" r="4" fill="#6366f1"/>
+    <text x="235" y="30" font-size="8" fill="#16a34a">顶背离信号</text>
+  </svg>`,
+
+  yieldCurve: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="20" font-size="10" font-weight="600" fill="#374151">收益率曲线三种形态</text>
+    <!-- 坐标轴 -->
+    <line x1="40" y1="160" x2="310" y2="160" stroke="#d1d5db" stroke-width="1"/>
+    <text x="170" y="178" font-size="9" fill="#9ca3af" text-anchor="middle">期限 → (短→长)</text>
+    <text x="22" y="100" font-size="9" fill="#9ca3af" transform="rotate(-90,22,100)" text-anchor="middle">收益率→</text>
+    <!-- 正常曲线 -->
+    <path d="M50,140 Q120,100 200,60 Q260,40 310,35" fill="none" stroke="#16a34a" stroke-width="2"/>
+    <text x="315" y="37" font-size="9" fill="#16a34a" font-weight="500">正常</text>
+    <!-- 平坦曲线 -->
+    <path d="M50,90 Q120,87 200,83 Q260,80 310,78" fill="none" stroke="#d97706" stroke-width="2"/>
+    <text x="315" y="80" font-size="9" fill="#d97706" font-weight="500">平坦</text>
+    <!-- 倒挂曲线 -->
+    <path d="M50,40 Q120,70 200,80 Q260,85 310,87" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="315" y="42" font-size="9" fill="#dc2626" font-weight="500">倒挂</text>
+    <!-- 标注 -->
+    <text x="60" y="68" font-size="8" fill="#dc2626">短>长</text>
+    <text x="60" y="38" font-size="7" fill="#dc2626">衰退预警</text>
+  </svg>`,
+
+  durationCompare: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">久期对比 · 利率变动1%的价格影响</text>
+    <!-- 短债 久期2年 -->
+    <rect x="50" y="130" width="40" height="20" rx="4" fill="#16a34a" opacity=".8"/>
+    <text x="70" y="143" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">-2%</text>
+    <text x="70" y="168" font-size="9" fill="#16a34a" text-anchor="middle">短债 · 久期2年</text>
+    <!-- 中债 久期7年 -->
+    <rect x="130" y="90" width="40" height="60" rx="4" fill="#d97706" opacity=".8"/>
+    <text x="150" y="122" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">-7%</text>
+    <text x="150" y="168" font-size="9" fill="#d97706" text-anchor="middle">中债 · 久期7年</text>
+    <!-- 长债 久期18年 -->
+    <rect x="210" y="40" width="40" height="110" rx="4" fill="#dc2626" opacity=".8"/>
+    <text x="230" y="97" font-size="9" font-weight="600" fill="#fff" text-anchor="middle">-18%</text>
+    <text x="230" y="168" font-size="9" fill="#dc2626" text-anchor="middle">长债 · 久期18年</text>
+    <text x="170" y="185" font-size="8" fill="#9ca3af" text-anchor="middle">利率↑1% 价格↓久期%</text>
+  </svg>`,
+
+  basisAnalysis: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">基差收敛 · 期现回归</text>
+    <!-- 现货 -->
+    <polyline points="50,50 100,55 150,45 200,48 250,42 300,45" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="305" y="48" font-size="9" fill="#dc2626">现货 S</text>
+    <!-- 期货 -->
+    <polyline points="50,130 100,125 150,110 200,100 250,75 300,55" fill="none" stroke="#6366f1" stroke-width="2"/>
+    <text x="305" y="57" font-size="9" fill="#6366f1">期货 F</text>
+    <!-- 收敛标注 -->
+    <path d="M170,110 Q200,120 250,90" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="200" y="135" font-size="9" fill="#16a34a" text-anchor="middle">基差 → 收敛</text>
+    <!-- 基差标注 -->
+    <line x1="150" y1="45" x2="150" y2="110" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="145" y="85" font-size="9" fill="#d97706" text-anchor="end">基差</text>
+    <!-- 交割月标注 -->
+    <line x1="290" y1="160" x2="290" y2="55" stroke="#374151" stroke-width="1" stroke-dasharray="2,2"/>
+    <text x="290" y="173" font-size="9" fill="#374151" text-anchor="middle">交割日</text>
+  </svg>`,
+
+  inventoryCycle: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">库存周期四阶段</text>
+    <line x1="170" y1="30" x2="170" y2="165" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="35" y1="100" x2="305" y2="100" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="310" y="103" font-size="8" fill="#9ca3af">库存→</text>
+    <text x="175" y="25" font-size="8" fill="#9ca3af">需求→</text>
+    <!-- 左上: 被动去库 -->
+    <rect x="45" y="35" width="110" height="55" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="1.2"/>
+    <text x="100" y="55" font-size="11" font-weight="700" fill="#16a34a" text-anchor="middle">被动去库</text>
+    <text x="100" y="70" font-size="9" fill="#22c55e" text-anchor="middle">需求↑ 库存↓</text>
+    <text x="100" y="83" font-size="10" fill="#dc2626" text-anchor="middle">★ 买入持有</text>
+    <!-- 右上: 主动补库 -->
+    <rect x="185" y="35" width="110" height="55" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+    <text x="240" y="55" font-size="11" font-weight="700" fill="#d97706" text-anchor="middle">主动补库</text>
+    <text x="240" y="70" font-size="9" fill="#d97706" text-anchor="middle">需求↑ 库存↑</text>
+    <text x="240" y="83" font-size="10" fill="#dc2626" text-anchor="middle">☆ 逐步减仓</text>
+    <!-- 左下: 主动去库 -->
+    <rect x="45" y="108" width="110" height="55" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="100" y="128" font-size="11" font-weight="700" fill="#dc2626" text-anchor="middle">主动去库</text>
+    <text x="100" y="143" font-size="9" fill="#ef4444" text-anchor="middle">需求↓ 库存↓</text>
+    <text x="100" y="156" font-size="10" fill="#dc2626" text-anchor="middle">☆ 减仓等待</text>
+    <!-- 右下: 被动补库 -->
+    <rect x="185" y="108" width="110" height="55" rx="6" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.2"/>
+    <text x="240" y="128" font-size="11" font-weight="700" fill="#9333ea" text-anchor="middle">被动补库</text>
+    <text x="240" y="143" font-size="9" fill="#a855f7" text-anchor="middle">需求↓ 库存↑</text>
+    <text x="240" y="156" font-size="10" fill="#dc2626" text-anchor="middle">★ 做空窗口</text>
+  </svg>`,
+
+  supplyDemand: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">供需平衡 · 缺口决定价格</text>
+    <!-- 坐标 -->
+    <line x1="40" y1="170" x2="310" y2="170" stroke="#d1d5db" stroke-width="1"/>
+    <line x1="40" y1="170" x2="40" y2="25" stroke="#d1d5db" stroke-width="1"/>
+    <text x="310" y="183" font-size="9" fill="#9ca3af" text-anchor="end">数量→</text>
+    <text x="30" y="95" font-size="9" fill="#9ca3af" text-anchor="middle" transform="rotate(-90,30,95)">价格→</text>
+    <!-- 需求曲线 -->
+    <line x1="60" y1="60" x2="280" y2="140" stroke="#dc2626" stroke-width="2"/>
+    <text x="285" y="143" font-size="9" fill="#dc2626">需求 D</text>
+    <!-- 供给曲线 -->
+    <line x1="60" y1="140" x2="280" y2="40" stroke="#6366f1" stroke-width="2"/>
+    <text x="285" y="42" font-size="9" fill="#6366f1">供给 S</text>
+    <!-- 均衡点 -->
+    <circle cx="170" cy="100" r="5" fill="#374151"/>
+    <text x="170" y="95" font-size="9" fill="#374151" text-anchor="end">均衡 P</text>
+    <!-- 需求增加 -->
+    <line x1="50" y1="45" x2="250" y2="110" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="55" y="40" font-size="9" fill="#dc2626">D'</text>
+    <!-- 新均衡 -->
+    <circle cx="210" cy="72" r="5" fill="#374151"/>
+    <text x="215" y="67" font-size="9" fill="#374151">P'</text>
+    <path d="M170,100 Q190,85 210,72" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="210" y="160" font-size="9" fill="#d97706" text-anchor="middle">需求↑→价格↑</text>
+  </svg>`,
+
+  contangoBack: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">升贴水结构 · Back vs Contango</text>
+    <!-- Contango -->
+    <polyline points="50,140 120,120 190,95 260,65 310,50" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="310" y="48" font-size="9" fill="#dc2626" font-weight="500">升水 Contango</text>
+    <text x="170" y="178" font-size="8" fill="#9ca3af" text-anchor="middle">期限→(近→远)</text>
+    <!-- Backwardation -->
+    <polyline points="50,40 120,60 190,85 260,115 310,130" fill="none" stroke="#16a34a" stroke-width="2"/>
+    <text x="310" y="133" font-size="9" fill="#16a34a" font-weight="500">贴水 Backwardation</text>
+    <!-- 现货标注 -->
+    <line x1="50" y1="35" x2="50" y2="145" stroke="#374151" stroke-width="1" stroke-dasharray="2,2"/>
+    <text x="50" y="162" font-size="9" fill="#374151" text-anchor="middle">现货</text>
+    <!-- 标注说明 -->
+    <text x="40" y="73" font-size="8" fill="#16a34a">Back: 现货紧张, 做多近月</text>
+    <text x="135" y="163" font-size="8" fill="#dc2626">Contango: 供给宽松, 做空近月</text>
+  </svg>`,
+
+  trendFollow: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">趋势跟踪 · 突破入场 + 移动止损</text>
+    <!-- 趋势 -->
+    <polyline points="50,150 90,140 130,130 170,110 210,80 250,60 290,40" fill="none" stroke="#374151" stroke-width="2"/>
+    <!-- 通道 -->
+    <line x1="50" y1="140" x2="290" y2="30" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="6,3"/>
+    <line x1="50" y1="160" x2="290" y2="50" stroke="#16a34a" stroke-width="1" stroke-dasharray="6,3"/>
+    <!-- 突破点 -->
+    <circle cx="210" cy="80" r="6" fill="#16a34a"/>
+    <text x="210" y="72" font-size="9" fill="#16a34a" text-anchor="middle" font-weight="600">突破入场</text>
+    <!-- 止损线 -->
+    <line x1="210" y1="95" x2="210" y2="165" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="200" y="173" font-size="8" fill="#dc2626">初始止损</text>
+    <!-- 移动止损 -->
+    <line x1="290" y1="50" x2="290" y2="165" stroke="#d97706" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="280" y="173" font-size="8" fill="#d97706">移动止损</text>
+    <!-- 标注 -->
+    <polygon points="210,80 215,88 205,88" fill="#16a34a"/>
+  </svg>`,
+
+  dupont: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">杜邦分析 · ROE 分解</text>
+    <!-- 顶层 ROE -->
+    <rect x="120" y="25" width="100" height="30" rx="6" fill="#1a1a2e"/>
+    <text x="170" y="44" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ROE</text>
+    <!-- 连接线 -->
+    <line x1="170" y1="55" x2="170" y2="70" stroke="#9ca3af" stroke-width="1.5"/>
+    <line x1="50" y1="70" x2="290" y2="70" stroke="#9ca3af" stroke-width="1"/>
+    <line x1="50" y1="70" x2="50" y2="80" stroke="#9ca3af" stroke-width="1.5"/>
+    <line x1="170" y1="70" x2="170" y2="80" stroke="#9ca3af" stroke-width="1.5"/>
+    <line x1="290" y1="70" x2="290" y2="80" stroke="#9ca3af" stroke-width="1.5"/>
+    <!-- 第二层: 三个驱动因素 -->
+    <rect x="5" y="80" width="90" height="28" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="50" y="98" font-size="10" font-weight="600" fill="#4338ca" text-anchor="middle">利润率</text>
+    <rect x="125" y="80" width="90" height="28" rx="5" fill="#dcfce7" stroke="#22c55e" stroke-width="1"/>
+    <text x="170" y="98" font-size="10" font-weight="600" fill="#16a34a" text-anchor="middle">× 周转率</text>
+    <rect x="245" y="80" width="90" height="28" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+    <text x="290" y="98" font-size="10" font-weight="600" fill="#d97706" text-anchor="middle">× 杠杆率</text>
+    <!-- 连接线 -->
+    <line x1="50" y1="108" x2="50" y2="120" stroke="#9ca3af" stroke-width="1"/>
+    <line x1="170" y1="108" x2="170" y2="120" stroke="#9ca3af" stroke-width="1"/>
+    <line x1="290" y1="108" x2="290" y2="120" stroke="#9ca3af" stroke-width="1"/>
+    <!-- 第三层: 代表公司 -->
+    <rect x="5" y="120" width="90" height="50" rx="5" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="50" y="138" font-size="9" fill="#374151" text-anchor="middle">茅台</text>
+    <text x="50" y="153" font-size="9" fill="#16a34a" text-anchor="middle">净利率 50%+</text>
+    <text x="50" y="166" font-size="8" fill="#9ca3af" text-anchor="middle">高利润率驱动</text>
+    <rect x="125" y="120" width="90" height="50" rx="5" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="170" y="138" font-size="9" fill="#374151" text-anchor="middle">沃尔玛</text>
+    <text x="170" y="153" font-size="9" fill="#d97706" text-anchor="middle">周转率 2.5x</text>
+    <text x="170" y="166" font-size="8" fill="#9ca3af" text-anchor="middle">高周转驱动</text>
+    <rect x="245" y="120" width="90" height="50" rx="5" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="290" y="138" font-size="9" fill="#374151" text-anchor="middle">银行</text>
+    <text x="290" y="153" font-size="9" fill="#dc2626" text-anchor="middle">杠杆 10x+</text>
+    <text x="290" y="166" font-size="8" fill="#9ca3af" text-anchor="middle">高杠杆驱动</text>
+  </svg>`,
+
+  creditSpread: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">信用利差 · 风险偏好的温度计</text>
+    <!-- 基准国债 -->
+    <polyline points="50,100 100,105 150,100 200,95 250,100 300,98" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="305" y="101" font-size="9" fill="#6366f1">国债</text>
+    <!-- 信用债 -->
+    <polyline points="50,50 100,55 150,60 200,40 250,70 300,55" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="305" y="57" font-size="9" fill="#dc2626">信用债</text>
+    <!-- 利差填充 -->
+    <path d="M50,50 Q100,55 150,60 Q200,40 250,70 L300,55 L300,98 Q250,100 200,95 Q150,100 100,105 L50,100 Z" fill="rgba(200,164,74,0.12)" stroke="none"/>
+    <!-- 危机标注 -->
+    <rect x="185" y="33" width="40" height="16" rx="3" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+    <text x="205" y="44" font-size="8" font-weight="600" fill="#dc2626" text-anchor="middle">危机</text>
+    <text x="205" y="65" font-size="8" fill="#dc2626" text-anchor="middle">利差飙</text>
+    <!-- 利差标注 -->
+    <line x1="140" y1="56" x2="140" y2="102" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="130" y="83" font-size="9" fill="#d97706" text-anchor="end">利差</text>
+  </svg>`,
+
+  positionPrice: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">持仓量与价格 · 四种关系</text>
+    <!-- 左上: 增仓上涨 -->
+    <polyline points="50,75 90,50" stroke="#16a34a" stroke-width="2" fill="none"/>
+    <circle cx="90" cy="50" r="4" fill="#16a34a"/>
+    <text x="70" y="45" font-size="9" fill="#16a34a" text-anchor="middle">增仓↑+价↑</text>
+    <text x="70" y="100" font-size="8" fill="#374151" text-anchor="middle">新多入场 · 趋势健康</text>
+    <!-- 右上: 减仓上涨 -->
+    <polyline points="170,75 210,50" stroke="#d97706" stroke-width="2" fill="none"/>
+    <circle cx="210" cy="50" r="4" fill="#d97706"/>
+    <text x="190" y="45" font-size="9" fill="#d97706" text-anchor="middle">减仓↑+价↑</text>
+    <text x="190" y="100" font-size="8" fill="#374151" text-anchor="middle">空头回补 · 趋势末端</text>
+    <!-- 左下: 增仓下跌 -->
+    <polyline points="50,135 90,165" stroke="#dc2626" stroke-width="2" fill="none"/>
+    <circle cx="90" cy="165" r="4" fill="#dc2626"/>
+    <text x="70" y="168" font-size="9" fill="#dc2626" text-anchor="middle">增仓↑+价↓</text>
+    <text x="70" y="185" font-size="8" fill="#374151" text-anchor="middle">新空入场 · 趋势确立</text>
+    <!-- 右下: 减仓下跌 -->
+    <polyline points="170,135 210,165" stroke="#6366f1" stroke-width="2" fill="none"/>
+    <circle cx="210" cy="165" r="4" fill="#6366f1"/>
+    <text x="190" y="168" font-size="9" fill="#6366f1" text-anchor="middle">减仓↑+价↓</text>
+    <text x="190" y="185" font-size="8" fill="#374151" text-anchor="middle">多头平仓 · 跌势尾声</text>
+  </svg>`,
+
+  fiveForces: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">波特五力 · 行业吸引力评估</text>
+    <!-- 中心: 竞争 -->
+    <rect x="120" y="72" width="100" height="36" rx="6" fill="#1a1a2e"/>
+    <text x="170" y="95" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">现有竞争</text>
+    <!-- 上: 新进入者 -->
+    <rect x="120" y="25" width="100" height="28" rx="5" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+    <text x="170" y="43" font-size="10" font-weight="600" fill="#dc2626" text-anchor="middle">新进入者</text>
+    <line x1="170" y1="53" x2="170" y2="72" stroke="#9ca3af" stroke-width="1"/>
+    <!-- 下: 替代品 -->
+    <rect x="120" y="127" width="100" height="28" rx="5" fill="#f3e8ff" stroke="#a855f7" stroke-width="1"/>
+    <text x="170" y="145" font-size="10" font-weight="600" fill="#9333ea" text-anchor="middle">替代品</text>
+    <line x1="170" y1="108" x2="170" y2="127" stroke="#9ca3af" stroke-width="1"/>
+    <!-- 左: 供应商 -->
+    <rect x="5" y="72" width="90" height="28" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+    <text x="50" y="90" font-size="10" font-weight="600" fill="#d97706" text-anchor="middle">供应商议价力</text>
+    <line x1="95" y1="86" x2="120" y2="86" stroke="#9ca3af" stroke-width="1"/>
+    <!-- 右: 买家 -->
+    <rect x="245" y="72" width="90" height="28" rx="5" fill="#dcfce7" stroke="#22c55e" stroke-width="1"/>
+    <text x="290" y="90" font-size="10" font-weight="600" fill="#16a34a" text-anchor="middle">买家议价力</text>
+    <line x1="220" y1="86" x2="245" y2="86" stroke="#9ca3af" stroke-width="1"/>
+  </svg>`,
+
+  kellyFormula: `<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+    <rect width="340" height="190" fill="#fafaf8" rx="6"/>
+    <text x="20" y="18" font-size="10" font-weight="600" fill="#374151">凯利公式 · 最优仓位计算</text>
+    <!-- 公式 -->
+    <rect x="30" y="30" width="280" height="40" rx="6" fill="#1a1a2e"/>
+    <text x="170" y="55" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">f = (bp - q) / b</text>
+    <!-- 参数说明 -->
+    <text x="50" y="85" font-size="10" fill="#374151">f = 最优仓位比例</text>
+    <text x="50" y="100" font-size="10" fill="#374151">b = 盈亏比（平均盈利÷平均亏损）</text>
+    <text x="50" y="115" font-size="10" fill="#374151">p = 胜率（盈利交易占比）</text>
+    <text x="50" y="130" font-size="10" fill="#374151">q = 1-p = 亏损概率</text>
+    <!-- 实战示例 -->
+    <rect x="30" y="142" width="280" height="36" rx="6" fill="#f0f7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="50" y="158" font-size="9" fill="#4338ca">例：胜率55% · 盈亏比1.5</text>
+    <text x="50" y="172" font-size="9" fill="#4338ca">f=(1.5×0.55−0.45)/1.5=25% → 实战用半凯利12.5%</text>
+  </svg>`
+};
+
+// 知识数据
+const data = {
+  stocks: {
+    label: '股票',
+    threads: {
+      fundamental: {
+        icon: '📊', label: '基本面分析',
+        points: [
+          {
+            id:'s-f-1', title:'美林投资时钟',
+            brief:'根据经济增长与通胀的周期性轮动，指导大类资产配置的核心框架。',
+            practical:'① 识别当前所处阶段：看GDP同比增速（增长）+ CPI同比（通胀），用过去12个月移动平均消除噪音。② 资产配置：衰退配债券（TLT/国债ETF）、复苏配股票（沪深300/纳指）、过热配商品（原油/铜ETF）、滞胀持现金。③ 每季度重评估一次，不用于短线交易。',
+            ref:'A股历史轮动周期约12-18个月。关键阈值：CPI>3%为高通胀，GDP增速<5%为低增长。PPI与CPI组合更有先导性。',
+            combo:'结合库存周期（主动去库/补库）和PMI先行指标（PMI>50扩张，<50收缩）确认时钟位置。关注央行货币政策方向（降准降息=宽松信号）。',
+            diagram: DIAGRAMS.merrillClock,
+            case:'2020年疫情后中国处于复苏（GDP从-6.8%回升至+18.3%，CPI低位），美林时钟指向股票。消费和科技板块在2020-2021年领涨。2022年进入滞胀（GDP放缓至3%，PPI高位），股债双杀，持有现金才是最优。',
+            boundary:'中国受政策干预影响大，美林时钟需结合"政策周期"修正。产业政策（如新能源补贴）可能扭曲天然经济周期。时钟适用于季度以上大方向判断，日内交易完全无效。'
+          },
+          {
+            id:'s-f-2', title:'货币政策与流动性',
+            brief:'央行通过利率、准备金率和公开市场操作调控货币供应，是股市上涨的"燃料"。',
+            practical:'① 跟踪每月10-15日公布的社融数据和M2增速。社融存量同比增速 > 10%为宽松，< 8%为紧缩。② 当M2增速-社融增速 > 2%（流动性剩余）时利好股市。③ 降准降息后观察市场反应：放量上涨则确认底部，冲高回落则仍需等待。④ 关注DR007是否低于政策利率（宽松信号）。',
+            ref:'社融增速（%）：宽松>10%，中性8-10%，紧缩<8%。M2增速历史均值约10%。DR007偏离7天逆回购利率<30bp为正常。一年期LPR下调10bp以上为显著宽松。',
+            combo:'配合中美利差（10Y中国国债-10Y美国国债）判断外资流向。利差>100bp利好A股外资流入。关注人民币汇率——贬值压力会制约央行宽松空间。',
+            case:'2023年8月央行超预期降息（MLF下调15bp）+ 降准0.25%，但社融增速仅9%，流动性释放有限，A股反弹仅维持一周。2020年3月疫情后社融增速从10.7%飙升至13.3%，+M2增速达到14%，流动性极度充裕，A股从2646涨至3731。',
+            boundary:'流动性宽松不是涨的充分条件。2015年股灾后央行连续降息但股市继续下跌——信心缺失时放水也难以传导。极度宽松末期需警惕通胀引发政策急转弯。'
+          },
+          {
+            id:'s-f-3', title:'行业生命周期',
+            brief:'行业从导入到衰退经历四个阶段，不同阶段适用完全不同的投资策略和估值锚。',
+            practical:'① 导入期：看营收增速>50%，PS估值，关注渗透率（<5%为导入期）。② 成长期：看净利润增速>30%，PEG<1为合理，渗透率5%-30%。③ 成熟期：看ROE>15%和股息率，PE估值，行业集中度提升。④ 衰退期：看自由现金流和资产处置价值。',
+            ref:'渗透率参考：<5%导入，5-30%成长，30-70%成熟，>70%衰退。PEG=PE÷净利润增速，<1低估>1高估。成熟期PE参考：消费25-35x，工业10-20x。',
+            combo:'用"产能利用率"和"资本开支增速"判断行业位置——资本开支持续高增说明行业还在扩张期，产能利用率见顶则可能进入成熟。关注行业CR5（前5名市占率）变化。',
+            diagram: DIAGRAMS.inventoryCycle,
+            case:'新能源车：2020年渗透率5.4%（导入→成长期），宁德时代营收从457亿增至1304亿，PEG虽高但增长消化。2023年渗透率超35%（成长→成熟），增速放缓至个位数，PE从100倍回落至20倍。投资逻辑从"增长"切换为"盈利质量和分红"。',
+            boundary:'技术迭代快的行业（如消费电子）生命周期可能加速——导入到成熟只需2-3年。政策催化的行业（如光伏）可能跳过导入直接过热。成熟期行业仍可能有"第二增长曲线"。'
+          },
+          {
+            id:'s-f-4', title:'波特五力模型',
+            brief:'从供应商、买家、新进入者、替代品和现有竞争五个维度评估行业的盈利天花板。',
+            practical:'① 给每项力量打分（1-5分，5分最强=最不利于企业）。② 加总得分：<10分=优秀行业（高护城河），10-15=中等，>15=竞争力弱。③ 重点看"供应商"和"买家"两端的议价力——两端越分散，企业越有利。④ 结合毛利率趋势验证——毛利率持续提升说明定价权强。',
+            ref:'理想行业标准：供应商和买家分散（前5名占比<20%）、新进入者壁垒高（牌照/品牌/规模）、替代品有限、竞争格局稳定（CR5>60%）。毛利率>40%通常意味有定价权。',
+            combo:'五力 + ROE杜邦分析：高ROE且高利润率的行业通常五力弱（如白酒）。五力变化往往先于ROE变化6-12个月。关注行业"整合事件"（并购增多→五力变弱）。',
+            diagram: DIAGRAMS.fiveForces,
+            case:'白酒是五力最弱的行业：上游粮食供应分散、下游经销商多但依赖龙头品牌、新进入者受制于品牌壁垒和酿造周期、几乎无替代品、竞争格局已定（茅台五粮液CR2>50%）。对应毛利率>85%+ROE>25%，持续产生超额收益。',
+            boundary:'五力是静态框架，忽略技术颠覆（如互联网对传统零售）和监管（如医药集采重构行业格局）。五力弱+行业下行时，反而是最危险的逆向信号。需每年重评估一次。'
+          },
+          {
+            id:'s-f-5', title:'公司护城河',
+            brief:'企业长期维持超额利润的可持续竞争优势——巴菲特体系中最核心的选股标准。',
+            practical:'① 量化验证：近5年ROE均>15%、毛利率稳定无大波动、自由现金流/净利润>80%。② 定性判断护城河类型：品牌（看广告投入产出比）、网络效应（看用户增长和ARPU）、转换成本（看客户留存率）。③ 护城河变化信号：毛利率趋势性下降、竞争对手追赶、客户流失率上升。',
+            ref:'强护城河量化标准：ROE(5年均)>20%、毛利率(5年波动)<5个百分点、自由现金流转化率>80%、有息负债率<30%。护城河评级：宽阔(ROE>25%)、一般(15-25%)、狭窄(10-15%)、无(<10%)。',
+            combo:'用DCF估值验证护城河价值：宽阔护城河的企业可用更高永续增长率假设（3%vs行业平均2%）。护城河+行业生命周期=最强大的选股组合。',
+            case:'茅台护城河验证：① 品牌溢价（飞天茅台出厂价969，市场价2500+）；② 产能稀缺（茅台镇15.03平方公里核心产区已饱和）；③ 渠道控制力（i茅台直营占比提升至40%+）。结果：毛利率稳定在91-93%，ROE持续>28%，自由现金流/净利润>100%。',
+            boundary:'护城河可被颠覆：数码相机对柯达、智能手机对诺基亚、集采对仿制药企。品牌护城河在代际更替时最脆弱——年轻一代消费习惯变了（如年轻人不喝白酒、不买钻石）。护城河需每年重检。'
+          },
+          {
+            id:'s-f-6', title:'PE/PB/PS 估值体系',
+            brief:'市盈率看盈利、市净率看资产、市销率看营收，不同阶段和行业适用不同估值锚。',
+            practical:'① 稳定盈利用PE：参考近5年PE分位（<20%分位=低估，>80%分位=高估）。② 金融和重资产用PB：PB<1通常意味着市场不信任账面资产，需注意减值风险。③ 成长公司用PS：PS<3（高毛利行业）或PS<1（低毛利行业）可作为参考。④ 估值最好与增速挂钩（PEG<1为低估）。',
+            ref:'A股PE中枢：消费35x、医药40x、科技50x、工业20x、银行6x。PB参考：银行<0.6x为低估、保险<1x为低估。PS参考：SaaS公司PS<5x低估。PEG<1且PE<30x为合理买入区间。',
+            combo:'PE分位+社融增速：估值低位（PE<20%分位）+流动性宽松（社融>10%）=最佳买入时点。估值高位（PE>80%分位）+社融见顶=减仓信号。估值分位和基本面验证（如业绩预告）需要同时使用。',
+            case:'2022年10月沪深300 PE跌至10.5x（近5年<1%分位），PB跌至1.2x。按PE分位法属于极度低估。结合社融增速企稳，是明确的买入区域。随后3个月反弹超15%。银行股案例：招商银行PB从1.2x跌至0.6x，表面PB极低但隐含资产质量担忧。',
+            boundary:'低PE可能是"价值陷阱"——PE低可能因盈利即将下滑（周期股顶部PE最低）。科技股PE高也可能合理（高增长消化估值）。不同行业PE不可直接对比。历史分位在结构性变化（如利率中枢下移）时失效。'
+          },
+          {
+            id:'s-f-7', title:'ROE 杜邦分解',
+            brief:'将净资产收益率拆解为利润率、周转率和杠杆率，精准定位企业盈利的真实驱动力和脆弱点。',
+            practical:'① 高利润率驱动（茅台型）：关注毛利率变化和费用率控制。② 高周转驱动（零售型）：关注存货周转天数和应收账款周转率。③ 高杠杆驱动（银行型）：关注不良率和杠杆倍数——最脆弱。④ 驱动因素切换（如利润率下降但ROE靠杠杆维持）是危险信号。',
+            ref:'优秀标准：ROE>15%（连续5年）。利润率分界：>20%高利润、10-20%中等、<10%低利润。周转率分界：>1为高周转。杠杆率（权益乘数）：<2安全、2-3适度、>3高杠杆风险。',
+            combo:'ROE+自由现金流：高ROE+高现金流=优质公司（如茅台）。高ROE+低现金流=需警惕（盈利质量可能差）。杜邦+波特五力：高利润率的成因是否来自定价权。',
+            diagram: DIAGRAMS.dupont,
+            case:'格力电器ROE长期>25%，杜邦拆解发现：净利率约10%（正常）、资产周转率约0.7（偏低），但权益乘数>3x（高杠杆）。说明高ROE依赖经销商占款（预收款+应付款）驱动。当地产下行、终端销售放缓，高杠杆放大了ROE下滑幅度。',
+            boundary:'ROE是滞后指标（看过去）。回购会减少净资产、人为拉高ROE。不同行业ROE不可直接比较——轻资产公司天然ROE更高。高杠杆驱动的ROE最脆弱，需特别关注负债端风险。'
+          },
+          {
+            id:'s-f-8', title:'DCF 自由现金流折现',
+            brief:'将企业未来所有自由现金流按折现率折算为现值，评估内在价值的根本方法（巴菲特的"企业价值"）。',
+            practical:'① 只适用于现金流稳定可预测的企业（消费、公用事业），周期股和科技股禁用。② 关键假设三要素：未来5年增长率（参考过去3-5年）、永续增长率（不超GDP增速3%）、折现率WACC（参考公司加权资金成本8-12%）。③ DCF结果±30%浮动都正常——别被"精确数字"欺骗。',
+            ref:'WACC参考：大蓝筹8-9%、成长股10-12%、高风险15%+。永续增长率：中国通常取2-3%（GDP长期增速）。终值往往占DCF总价值60-80%——终值假设的微小变化可导致估值变动±50%。',
+            combo:'DCF+安全边际：买入价至少低于DCF估值30%（安全边际）。用同行业PE交叉验证DCF合理性。当股价大幅跌破DCF估值时往往是买入机会（排除基本面恶化情况）。',
+            case:'2020年用DCF给腾讯估值：假设未来5年FCF增速15%、永续3%、WACC 9%，算得每股内在价值约600港元。然而2022年监管风暴致盈利预期下调30%，DCF的永续增长假设从3%跌至2%，内在价值缩水50%。DCF的"精准"掩盖了假设的脆弱。',
+            boundary:'DCF对周期股、科技初创、金融股（资本结构复杂）极不适用。微小假设变动可导致估值结果翻倍或减半。DCF更多是思维方式（企业价值=未来现金流的和）而非精确计算器。不适用于并购重组驱动的公司。'
+          },
+          {
+            id:'s-f-9', title:'股息率与回购',
+            brief:'公司通过分红和回购向股东返还现金，是成熟企业价值的重要衡量指标。',
+            practical:'① 股息率>3%且分红比例<70%（可持续性好）值得关注。② 股息率优于国债收益率（中国10Y约2.5%）时，对长线资金有吸引力。③ 关注"分红意愿"变化：首次分红或提高分红比例通常是盈利改善信号。④ 回购需看时机——低位回购是价值、高位回购是浪费。',
+            ref:'A股参考：股息率>3%为良好（全市场中位数约1.5%），>5%为优秀。分红比例：成熟企业30-50%合理，>70%可能不持续。回购比例：每年注销2-5%为正常，>5%为积极。',
+            combo:'股息率+自由现金流：自由现金流覆盖股息2倍以上才安全。高股息+低波动（Beta<1）=防御性品种，适合熊市配置。高股息+低估值（PE<15）+现金流充裕=高胜率组合。',
+            case:'中国石油常年股息率5-8%，在利率下行环境中对保险资金极具吸引力。2023年国资委将央企考核增ROE和现金流指标，倒逼提高分红。中石油分红率从30%提至45%，股价涨超50%。美股苹果10年回购注销40%股份，EPS翻倍，股价涨逾500%。',
+            boundary:'高股息率可能来自股价暴跌后的被动结果（股息率陷阱）。当分红比例>100%或公司借款分红，不可持续。回购在高位进行是价值毁灭——中美对比：美股回购普遍理性，A股回购常常"高买低停"。'
+          }
+        ]
+      },
+      technical: {
+        icon: '📈', label: '技术面分析',
+        points: [
+          {
+            id:'s-t-1', title:'K线形态组合',
+            brief:'通过K线的实体、影线和位置关系，洞察多空博弈的市场情绪和潜在转折信号。',
+            practical:'① 锤子线出现在下跌末端：下影线>实体2倍+次日阳线确认=买入信号。② 吞没形态：阳线实体完全覆盖前一日阴线实体（包括影线更好），且放量=可靠反转。③ 十字星出现在趋势末端（需成交量缩小）=趋势暂歇或转折。④ 周线级别形态比日线可靠3倍以上。',
+            ref:'锤子线下影线/实体比：>2:1有效，>3:1强信号。吞没形态：次日成交量>前日1.5倍为有效确认。十字星：振幅<前日1/2+成交量<前日=高可靠性。周线信号胜率约65%，日线约55%。',
+            combo:'K线形态+RSI背离：底部锤子线+RSI底背离=双重确认（胜率>70%）。形态+趋势线：在关键趋势线支撑位出现反转形态，可靠性大幅提升。',
+            diagram: DIAGRAMS.candlestick,
+            case:'2022年10月31日上证收出经典锤子线：低开2885后大幅回升收于2893，下影线60点（实体仅8点），下影线/实体=7.5倍。次日放量阳线确认底部。此后从2885涨至3310，涨幅15%。同期周线十字星也确认了底部区域。',
+            boundary:'低流动性个股的K线形态不可信。单根K线胜率约50%，需要后续确认。极端行情（涨跌停）中形态失真。月线级别的形态可靠性最高。'
+          },
+          {
+            id:'s-t-2', title:'支撑与阻力',
+            brief:'价格反复触碰但难以突破的水平区域，是多空资金博弈的关键防线和顶底互换的转换位。',
+            practical:'① 确认支撑/阻力：至少3次触碰且成交量配合（触碰时成交量放大=有效）。② 突破确认：收盘价突破且站稳3%+放量30%以上=有效突破。③ 支撑变阻力（顶底互换）：关键支撑被跌破后反弹至该位置时构成新阻力。④ 整数关口（3000点）是心理位，并非精确技术位。',
+            ref:'有效判定标准：触碰3次+每次反弹/回撤幅度递减=该位置越有效。突破过滤：3%或3天规则（突破后保持3天或超过3%为有效）。成交量确认：突破日成交量>20日均量30%以上为真突破。',
+            combo:'支撑/阻力+布林带：支撑与布林下轨重合=强化支撑。阻力与布林上轨重合=强化阻力。支撑/阻力+均线：MA60在支撑位附近=黄金支撑组合。',
+            diagram: DIAGRAMS.supportResistance,
+            case:'上证3000点是A股最强支撑：2016-2023年触碰15次以上，每次接近都有护盘和抄底资金。2023年10月有效跌破后，3000点转为强阻力——11月反弹到3030就回落，完美演绎"顶底互换"。实战中在3000附近做波段交易的成功率极高。',
+            boundary:'强趋势中支撑/阻力可被轻松突破（牛市阻力是用来突破的）。支撑/阻力不是精确价格而是一个"区"（±1%）。时间越近的支撑/阻力越有效——3年前的支撑意义不大。'
+          },
+          {
+            id:'s-t-3', title:'移动平均线系统',
+            brief:'通过计算一段时间平均价格来平滑波动，识别趋势方向和关键的"黄金/死亡交叉"信号。',
+            practical:'① 趋势判断：MA20>MA60>MA250=多头排列，持有。② 多头排列中回调至MA20不破=加仓点；MA20走平+价格围绕震荡=趋势可能结束。③ 金叉买入（MA20上穿MA60）+放量=可靠买入信号。④ 60日均线是中期生命线——有效跌破=趋势逆转。',
+            ref:'短线均线：MA5/10（周内交易）；中线：MA20/60（月线趋势）；长线：MA120/250（牛熊分界）。A股牛熊分界线：年线MA250之上为"技术性牛市"，之下为"技术性熊市"。',
+            combo:'均线+成交量：金叉时放量增仓=趋势确立；均线+MACD：均线多头排列+MACD零轴上方=最强趋势环境。均线+布林带：MA20与布林中轨重合=双重支撑。',
+            diagram: DIAGRAMS.movingAvg,
+            case:'2020年3月创业板MA20上穿MA60（金叉），随后均线多头排列持续15个月（1900→3576）。2021年12月MA20下穿MA60（死叉），趋势反转。MA250（年线）2022年初跌破后，长达18个月都在年线下方运行——年线是牛熊分界的实战价值极强。',
+            boundary:'震荡市中均线频繁交叉（"牛皮市"），假信号率>60%。均线天然滞后——金叉确认时趋势可能已走完30%。EMA比SMA反应快但仍滞后。最佳用法：均线判断趋势方向，K线形态找入场时机。'
+          },
+          {
+            id:'s-t-4', title:'MACD 指标',
+            brief:'通过快慢指数均线的聚合/分离判断动能变化，背离信号是趋势转折的最可靠预警。',
+            practical:'① 零轴上方金叉=强买入（主升浪）；零轴下方金叉=弱买入（反弹）。② 顶背离（股价新高+MACD未新高）=上涨动能衰竭，准备离场。③ 底背离（股价新低+MACD抬高）=下跌动能衰竭，准备入场。④ 柱状图由红转绿+MACD线高位死叉=离场信号。',
+            ref:'参数：(12,26,9)标准，A股可调为(6,13,5)缩短敏感度。背离认定标准：价格比前波高（或低）+MACD的DIF线比前波低（或高）=确认背离。顶背离+成交量萎缩=极高胜率。',
+            combo:'MACD+RSI：MACD背离+RSI在极端区（>80或<20）=双重确认。MACD+均线：均线多头排列+MACD零轴上金叉=最强共振。',
+            diagram: DIAGRAMS.macdDivergence,
+            case:'2021年1月茅台股价创2600新高，MACD的DIF线却未同步创高（前一峰720，后一峰650），形成日线顶背离。RSI同时从88回落。双重背离确认后，2周内跌至1900。2022年10月宁德时代股价新低但MACD抬高，底背离后从160反弹至230。',
+            boundary:'背离可以持续多次（"背离之后还有背离"）。强趋势中MACD长时间钝化——单边上涨时持续红柱不代表要回调。MACD是概率信号（60-70%胜率），非确定性信号。'
+          },
+          {
+            id:'s-t-5', title:'RSI 相对强弱指标',
+            brief:'衡量价格变动速度和幅度，判断超买超卖区间及背离信号。',
+            practical:'① RSI>70（超买）：不必然卖出，熊市超买才是卖点，牛市超买可延续。② RSI<30（超卖）：不必然买入，牛市超卖是买点，熊市超卖可延续。③ RSI背离信号>>超买超卖：价格新高RSI新低=顶背离；价格新低RSI抬高=底背离。④ RSI突破趋势线（如RSI从30以下突破下降趋势线）=买入信号。',
+            ref:'参数：14日标准。A股敏感型用9日（更快，但假信号多）。超买/超卖：70/30（14日），80/20（9日）。背离信号在周线级别可靠性最高（胜率>70%）。RSI趋势线突破比数值区间更可靠。',
+            combo:'RSI+MACD背离同时出现=极高胜率组合（>75%）。RSI+布林带：RSI<30时价格触及布林下轨=强烈买入信号。',
+            diagram: DIAGRAMS.rsiChart,
+            case:'2021年12月比亚迪股价新高333元，RSI(14)从85回落至70（顶背离），随后3个月跌至178，跌幅46%。2022年10月RSI跌至18（极度超卖），结合MACD底背离，形成底部区域，此后反弹至300。RSI极端值+背离组合是顶级信号。',
+            boundary:'强单边趋势中RSI可长期超买/超卖（牛市RSI>70持续数月），反向操作会被消灭。RSI更适合震荡市趋势末端。必须结合趋势——上升趋势中超买不卖，只做顶背离。'
+          },
+          {
+            id:'s-t-6', title:'布林带',
+            brief:'以均线为中心、标准差为带宽的动态通道，度量价格波动率和极端值区域。',
+            practical:'① 带宽收窄（"挤压"）后往往有大行情——方向需配合其他指标。② 价格触及上轨+RSI>70=短期过热，但强趋势中可"沿着上轨走"。③ 价格触及下轨+RSI<30=短期超卖，但不一定反弹。④ 布林带开口扩张方向=趋势方向（开口向上做多，开口向下做空）。',
+            ref:'参数：默认(20,2)。带宽<10%时关注突破（A股螺纹压缩）。上轨突破后若3天不回=有效突破。中轨本身就是MA20——价格在其中轨上方=短期多头。带宽从收缩到扩张的第一根K线方向通常就是突破方向。',
+            combo:'布林带+成交量：带宽收窄末期放量突破=可靠信号。布林带+MACD：MACD零轴上方+价格沿布林上轨=强趋势持有。',
+            diagram: DIAGRAMS.bollinger,
+            case:'2023年8月上证布林带带宽压缩至6%（半年最低），预示变盘。随后一周布林开口向下扩张，从3200跌至3050。2023年7月纯碱期货布林带宽从25%压缩至10%，随后向上扩张，从1800涨至2600（涨幅44%）。布林"挤压"后的行情通常幅度可观。',
+            boundary:'强趋势中价格可长期沿上轨/下轨运行。参数(20,2)是经验值，不同品种需调整（原油可用26,2.5）。极端行情中价格可远脱离轨道（2020年美股熔断）。'
+          },
+          {
+            id:'s-t-7', title:'成交量分析',
+            brief:'量是价的前提——成交量验证价格变动的真实性和可持续性，是技术分析的"空气"。',
+            practical:'① 价涨量增=健康（买方持续入场）；价涨量缩=反弹乏力（跟风不足）。② 价跌量增=恐慌出逃（短期见底征兆）；价跌量缩=跌势未尽（没人接盘）。③ 底部放量止跌=见底第一条件；顶部放量滞涨=见顶信号。④ 缩量到极致（<20日均量50%）后放量=变盘前兆。',
+            ref:'成交量阈值：低于20日均量50%=极度缩量；高于20日均量50%+为放量；高于2倍=巨量。换手率：<1%冷清，1-3%正常，3-7%活跃，>7%过热（小盘股标准提高）。',
+            combo:'成交量+K线形态：底部放量+锤子线=底部信号（胜率>65%）。成交量+突破：突破关键阻力时需放量30%以上。',
+            case:'2022年4月27日A股底部放量：成交额从不足7000亿放大至9000亿（+30%），止跌放量阳线。此后涨至3424。2023年8月印花税利好：成交额从6000亿冲至1.1万亿（+80%），但随后快速缩至6000亿以下，显示"放量一日游"，反弹不可持续。',
+            boundary:'极端行情中成交量失真（涨跌停无量）。T+1制度下A股成交量有噪音。绝对量不如相对量（比20日均值）有意义。新股、次新股前一月成交量数据不可比。'
+          },
+          {
+            id:'s-t-8', title:'量价背离',
+            brief:'价格与成交量出现方向性背离，是趋势脆弱、可能逆转的最可靠信号之一。',
+            practical:'① 顶背离：价格创阶段新高，成交量却呈阶梯式递减。追高意愿减弱，持股者更应谨慎而非加仓。② 底背离：价格创新低，成交量却逐步放大或形成阶梯状。有资金在低位承接，不必恐慌割肉。③ 背离持续时间越长（>1个月），反转越确定。',
+            ref:'顶背离判定：价格>前高+成交量<前高对应量=顶背离。底背离判定：价格<前低+成交量>前低对应量=底背离。重要程度：周线>日线>60分钟线。周线级别量价背离准确率>70%。',
+            combo:'量价背离+MACD背离：两者同时出现=极高胜率的转折信号（>80%）。量价背离+关键支撑/阻力：在关键位出现量价背离=该位置将被打破。',
+            case:'2023年5月AIGC板块暴涨，龙头科大讯飞股价创年内新高，但日成交从80亿萎缩至20亿（量价顶背离）。两周后板块回调超20%。2022年4月A股底部：上证2863创年内新低，但成交额从6000亿逐步增至9000亿（量价底背离），底部确认。',
+            boundary:'主力高度控盘股（庄股）无量上涨可持续。次新股量价数据不具可比性。关注相对成交量（比20日均量）比绝对数重要。量价背离是概率信号（约65-70%准确）。'
+          },
+          {
+            id:'s-t-9', title:'趋势线与通道',
+            brief:'通过连接价格低点或高点绘制直线，识别趋势方向和关键支撑/阻力位置。',
+            practical:'① 上升趋势线：连接两个抬升的低点，至少3次触碰为有效。45度斜率为最健康。② 通道：以上升趋势线为下轨，上轨平行线为阻力目标。③ 趋势线被突破（突破幅度>3%）=趋势可能逆转。④ 斜率过陡（>60度）的趋势线不可靠——价格会横盘"等待"均线跟上。',
+            ref:'有效判定：3次触碰+每次间隔时间均匀（如每月一次）。突破过滤：价格突破趋势线超过3%或3天=有效突破。趋势线角度：30-45度最可持续，>60度过于陡峭（易反转），<20度过于平坦（横盘）。',
+            combo:'趋势线+均线：趋势线与MA60重合=双重支撑/阻力。趋势线+成交量：突破趋势线时放量=信号可靠。趋势线+MACD：MACD背离+趋势线突破=趋势逆转确认。',
+            case:'2022-2023年纳斯达克100在10000-16000形成上升通道，每次触及下轨（约11000）是买入点，触及上轨（15500）是卖出点。2023年11月跌破通道下轨即趋势逆转信号。2024年A股上证指数连接2023年10月和12月低点形成上升趋势线，每次触碰都是买入机会。',
+            boundary:'趋势线有一定主观性（不同人画法不同）。极陡趋势线往往以"横盘突破"结束而非暴跌。大周期趋势线（周/月线）远比小周期（分钟/小时）可靠。趋势线在盘整市中完全无效。'
+          }
+        ]
+      }
+    }
+  },
+
+  bonds: {
+    label: '债券',
+    threads: {
+      fundamental: {
+        icon: '📋', label: '基本面分析',
+        points: [
+          {
+            id:'b-f-1', title:'利率周期',
+            brief:'利率的升降直接决定债券的牛熊。降息周期=债券牛市，加息周期=债券熊市。',
+            practical:'① 跟踪央行会议（美联储FOMC/中国央行例会）的前瞻指引，"最后一加"后是配置长债的窗口。② 当市场降息预期强烈（利率期货显示>50%概率），提前建仓长债。③ 加息周期中做空长债或缩短久期至2年以下。④ 关注"加息末期"信号：央行最后一次加息后6-12个月通常是债券最佳回报期。',
+            ref:'美联储FOMC一年8次会议，每次25bp。中国MLF/OMO利率调整窗口。利率期货（FedWatch）可预测加息降息概率。债券历史数据：降息周期前6个月长期国债平均回报+15-25%。',
+            combo:'利率周期+收益率曲线：降息初期曲线陡峭化（短端利率快降，长端滞后），利好中长期债券。利率周期+信用利差：降息周期中信用利差收窄，信用债表现优于利率债。',
+            case:'2022年3月-2023年7月美联储暴力加息525bp（从0.25%至5.5%），持有20年美债ETF（TLT）跌幅超40%——比股票还惨。2023年Q4市场预期加息结束，TLT从82涨至100，反弹22%。完整的周期：加息→债券暴跌→预期转向→债券暴涨。',
+            boundary:'精准预测利率拐点几乎不可能——市场可能比央行更早或更晚定价。欧日负利率打破传统框架。"Higher for longer"（高利率更久）是最大意外风险。'
+          },
+          {
+            id:'b-f-2', title:'收益率曲线形态',
+            brief:'不同期限国债收益率的连线，形态（正常/平坦/倒挂）揭示了市场对未来经济和利率的预期。',
+            practical:'① 正常曲线（短低长高）：经济正常增长，买入中期债券。② 平坦化（长短利差收窄）：货币政策在传导，买入长债锁定高利率。③ 倒挂（短高长低）=衰退预警信号——这是历史上最可靠的衰退指标之一。④ 倒挂结束后（曲线"变陡"修复）通常是债券最佳投资期。',
+            ref:'2s10s利差（2年-10年）：>50bp正常，0-50bp平坦化，<0倒挂。历史倒挂后平均12-18个月进入衰退。美国2s10s倒挂80bp以上=强衰退预警。中国国债2s10s利差>50bp为正常。',
+            combo:'收益率曲线+PMI：曲线倒挂+PMI<50=确认经济放缓。曲线+就业数据：倒挂但就业强劲="软着陆"可能。曲线从倒挂转陡峭=市场预期宽松=买入长债。',
+            diagram: DIAGRAMS.yieldCurve,
+            case:'2022年4月美国2s10s首次倒挂，持续18个月之久。历史上每次2s10s倒挂都先于经济衰退——2000年互联网泡沫、2008年金融危机、2020年疫情。2023年3月硅谷银行危机时曲线短暂陡峭化。2024年曲线从倒挂转陡峭，暗示降息周期即将开启。',
+            boundary:'从倒挂到衰退的时滞可长达6-24个月，被倒挂信号"骗"太早同样亏损。日本长期平坦的收益率曲线因央行政策扭曲。倒挂幅度<50bp时可能只是短期流动性因素。'
+          },
+          {
+            id:'b-f-3', title:'久期与凸性',
+            brief:'久期是债券价格对利率变化的敏感度（单位：年），是债券交易最核心的风险管理工具。',
+            practical:'① 久期=利率变动1%时债券价格变动的近似百分比。久期8年→利率↑1%→价格↓约8%。② 预期降息→拉长久期（买20年以上长期债券）；预期加息→缩短久期（买1-3年短期债券或货币基金）。③ 凸性修正：利率大幅下降时正凸性使价格上涨超过久期预测。',
+            ref:'久期参考：1-3年=2年，5-7年=5年，10年=8年，20年=13年，30年=18年。1bp价格变化=久期/10000×价格×100bp。TLT久期约17年，IEI（3-7Y国债）久期约4年。',
+            combo:'久期+信用利差：降息周期中拉长久期+下沉信用（买高收益债）=双轮驱动策略。久期+收益率曲线：曲线陡峭化时做多长债久期收益最大。',
+            diagram: DIAGRAMS.durationCompare,
+            case:'2022年加息周期中，TLT（久期~18年）跌幅超40%（理论跌幅18×5.25%≈94%，实际因凸性和期限溢价变动跌40%），而SHY（短债久期2年）仅跌2%。2023年Q4降息预期推动下，长债反弹22%，短债仅涨2%。久期是债券交易的"杠杆选择器"。',
+            boundary:'久期假设收益率曲线平行移动（各期限同步变动），现实中曲线可能扭曲。含权债券（可赎回/可回售）久期计算更复杂。信用债久期在违约风险上升时会缩短（价格不跟利率走）。'
+          },
+          {
+            id:'b-f-4', title:'信用评级体系',
+            brief:'评级机构对发行人偿债能力的评估决定了信用风险溢价，降级可触发强制抛售的"瀑布效应"。',
+            practical:'① 投资级（BBB-/Baa3以上）vs高收益（BB+及以下）：许多机构只能持有投资级债券。② 评级下调至高收益级会触发强制卖出（价格单日暴跌10-30%）。③ 关注"负面展望"和"列入观察"——它们是降级的先行信号。④ 评级上调往往滞后于基本面的实际改善，无需追高。',
+            ref:'标普/惠誉：AAA>AA>A>BBB（投资级）>BB>B>CCC>CC>C>D。穆迪：Aaa>Aa>A>Baa>Ba>B>Caa>Ca>C。违约率：AAA<0.1%，BB约1-2%，B约3-5%，CCC约15-30%。',
+            combo:'评级+信用利差：评级下调前利差通常已开始走阔，利差先行于评级调整6-12个月。评级+CDS（信用违约互换）：CDS价格飙升往往先于降级。',
+            case:'2023年8月惠誉下调美国AAA评级至AA+，10年美债收益率从3.9%至4.2%。碧桂园评级从BBB-连降至CC（深度垃圾），美元债从85美分跌至10美分以下。2008年雷曼兄弟评级从A降至D仅用时一个月——降级的"瀑布效应"是债券投资者最大的尾部风险。',
+            boundary:'评级是滞后指标（2008年雷曼A级评级维持到破产前一周）。不同机构评级标准不同。中国信用评级长期存在虚高问题（大量AAA评级实际质量参差不齐）。'
+          },
+          {
+            id:'b-f-5', title:'信用利差',
+            brief:'信用债与同期限国债的收益率之差，是市场风险偏好的"体温计"和信用恐慌的寒暑表。',
+            practical:'① 信用利差走阔（>200bp）=避险升温/信用担忧，应降低信用债仓位。② 利差收窄（<100bp）=风险偏好上升，可增配信用债获取超额收益。③ 利差的极端值（历史90%分位以上）往往是反向买入信号。④ 关注"利差分化"——高评级和低评级利差方向不一致=市场在审慎。',
+            ref:'中国AAA企业债利差正常区间50-100bp，AA+ 100-200bp，AA 200-400bp。美国投资级利差正常100-150bp，高收益300-500bp。极端：2020年3月投资级到400bp，高收益>1000bp。',
+            combo:'信用利差+PMI：PMI<50+利差走阔=确认信用恶化。利差+央行政策：央行提供流动性工具（如中国央行SPV）可快速压缩利差。',
+            diagram: DIAGRAMS.creditSpread,
+            case:'2022年11月中国地产债信用利差从200bp飙升至2000bp+（对应违约概率>20%），碧桂园、远洋等地产美元债跌至10美分以下。2023年Q2政策刺激下利差回落至500bp，地产债反弹至50美分。利差是市场给信用风险"定价"的最直接工具。',
+            boundary:'中国信用债刚兑在打破过程中，历史利差数据可参考性有限。利差在极端水平（2000bp+）时流动性可能枯竭（有价无市）。个券利差受流动性溢价影响大。'
+          },
+          {
+            id:'b-f-6', title:'通胀与 TIPS',
+            brief:'通胀侵蚀固定收益的购买力。TIPS（通胀保值债券）随CPI调整本金，是对冲通胀的最佳工具。',
+            practical:'① TIPS的票息按调整后的本金计算，有效保住了实际购买力。② 盈亏平衡通胀率（TIPS收益率-普通国债收益率）衡量市场通胀预期。③ 当盈亏平衡>3%时通胀预期过高，买入TIPS对冲；<2%时通胀温和。④ 通缩环境TIPS有保底机制（本金不减少）。',
+            ref:'美国10年TIPS收益率：实际收益率，正常0-1%。盈亏平衡通胀率：正常2-2.5%。若低于1.5%=通货紧缩预期，高于3%=通胀失控预期。中国无类似TIPS产品，可用黄金替代通胀对冲。',
+            combo:'TIPS+黄金：两者在通胀环境下均受益，但TIPS更精确（挂钩CPI），黄金受实际利率和地缘双重驱动。TIPS+大宗商品：通胀初期商品先涨，TIPS后涨。',
+            case:'2022年美国CPI飙至9.1%，普通国债持有者的实际收益为-7%（名义4% - 通胀9%）。而TIPS的投资者本金随CPI上修，一年收益约12%。2023年通胀回落至3%，盈亏平衡通胀率从3%降至2.2%，TIPS相对吸引力下降。',
+            boundary:'TIPS在通缩时表现差（虽然本金保底但票息降）。CPI本身与实际通胀体验可能偏差。TIPS流动性低于普通国债，大额交易有折价。'
+          },
+          {
+            id:'b-f-7', title:'债券分类',
+            brief:'利率债（无信用风险）vs 信用债（含信用风险）vs 可转债（债+股期权），风险收益特征差异极大。',
+            practical:'① 利率债（国债/政金债）：适合保守型，博利率方向。② 信用债（公司债/中票）：适合收益型，博信用利差收窄，需研究个券。③ 可转债：兼具保底（纯债价值）和上涨弹性（转股溢价），但波动率介于股债之间。④ 不同品种在组合中的配置比例视利率周期和风险偏好而定。',
+            ref:'三者风险排序（从小到大）：利率债<高等级信用债<可转债<高收益信用债。可转债转换溢价率<20%=偏股型，>50%=偏债型。到期收益率：国债<AAA企业债<AA企业债<可转债（均值）。',
+            combo:'可转债+股票：低位买可转债（溢价率低+纯债溢价率高）替代股票配置具有更高的风险收益比。利率债+信用债：利率下行周期配利率债+信用利差收窄周期配信用债。',
+            case:'2022年各类债券表现天差地别：国债全年仅跌-2%（利率风险），高收益信用债暴跌(信用风险)，可转债跌超15%（股债双杀）。2023年利率下行+信用利差收窄，利率债和信用债同涨但信用债涨幅更大。三种债券本质上是三种不同的资产。',
+            boundary:'分类边界在模糊化——部分地方债存在事实信用分化。可转债在转股期本质是"有保底的股票"。混合融资工具（永续债、次级债）的债/股属性在不同法律下认定不同。'
+          },
+          {
+            id:'b-f-8', title:'央行资产负债表',
+            brief:'央行扩表（QE买入债券）/缩表（QT卖出/停止再投资）是债市的"潮汐引擎"。',
+            practical:'① 美联储缩表节奏：2022年6月起每月减持600亿国债+350亿MBS，相当于每年减少约1万亿债券需求。② 中国央行通过MLF/降准操作对冲，观察"超额续作"还是"缩量续作"判断松紧。③ 央行购债方向（购买短债/长债）直接影响收益率曲线形状。④ QE结束到缩表开始之间是债市的"甜蜜窗口"。',
+            ref:'美联储资产负债表：2008年1万亿→2022年9万亿。中国央行资产负债表约40万亿（通过降准释放准备金）。量化宽松效果：1万亿QE约压降长端利率15-25bp。',
+            combo:'央行扩表+收益率曲线：QE多为购买长债→压低长端利率→曲线平坦化。央行资产负债表+信用利差：央行危机时刻购买信用债（如2020年美联储购买HYG ETF）直接压缩利差。',
+            case:'2022年6月美联储开始缩表（每月950亿），10年期美债收益率从QE结束时的1.5%飙至4.5%。中国央行2023年3月降准0.25%+MLF超额续作，10年期国债收益率从2.9%降至2.6%。央行的购/售债行为是债市的第一驱动力。',
+            boundary:'QE传导非完全线性——1万亿QE可能只压降利率10bp而非理论值更多。中国央行价格型工具（利率）与美联储不同。欧/日央行QE边际效用递减。'
+          },
+          {
+            id:'b-f-9', title:'回购市场',
+            brief:'回购利率（R007/DR007）是债市资金面的"体温计"，异常飙升往往预兆债市风险。',
+            practical:'① DR007围绕政策利率（1.8%）波动，偏离超过30bp=资金面趋紧。② R007-DR007的差值>50bp=非银机构融资困难（信用分层）。③ 季末/年末回购利率通常走高，属季节性正常。④ 回购利率异常飙升+债券市场下跌=警惕流动性危机。',
+            ref:'政策利率：7天逆回购利率1.8%，MLF利率2.5%。正常DR007区间1.6-2.0%。R007>3%为资金紧张，>5%为钱荒。2013年"钱荒"隔夜回购高达30%。',
+            combo:'回购利率+利差：R007飙升+信用利差走阔=流动性危机模式（2013年/2022年11月）。回购利率+股市：回购利率飙升通常利空股市（资金成本上升）。',
+            case:'2022年11月中国债市因理财赎回潮，R007从1.5%飙至3.0%，信用债抛售无人接盘（有价无市），AA级债券单周跌5-10%。基金被迫折价5%卖AAA级信用债满足赎回——典型流动性危机。2013年"钱荒"隔夜回购30%，国债收益率从3.4%飙至4.6%。',
+            boundary:'季末/年末回购走高是正常的季节性现象。交易所回购（GC007）与银行间机制不同。回购利率在每月缴税期自然走高，不代表流动性全面收紧。'
+          }
+        ]
+      },
+      technical: {
+        icon: '📉', label: '技术面分析',
+        points: [
+          {
+            id:'b-t-1', title:'价格利率反向关系',
+            brief:'债券价格与市场利率呈反向变动——利率上行，债券价格下跌（反向关系由久期决定幅度）。',
+            practical:'① 10年美债收益率从4%→4.5%，对应TLT价格下跌约9%（久期~18年×0.5%）。② 债券价格技术图与股票一致——趋势线、均线、MACD全部适用，只是逻辑反向。③ 国债期货看涨=预期利率下跌=经济走弱。④ 关注收益率的技术位比关注价格的整数位更有意义。',
+            ref:'价格-利率换算：收益率每变动1bp，10年期国债价格约变动0.08%（久期~8年）。10Y美债收益率4.0%→价格约96美元；4.5%→约91美元。关键整数位：4.0%、4.5%、5.0%是心理关口。',
+            combo:'价格反向+收益率曲线：短期利率变动（2Y）和长期利率变动（10Y）经常不同步。利率+技术分析：收益率的技术形态（双顶/头肩）比债券价格的形态更清晰。',
+            case:'2023年10月美债收益率从4.0%冲至5.0%，10Y美债价格从98跌至92。收益率在5.0%形成双顶（技术面看空收益率=看多债券），随后回落至4.0%，债券价格反弹至97。债券技术分析在关键整数位置同样有效。',
+            boundary:'负利率环境（如日本/欧洲）中反向关系变形。超短债（1年内）价格对利率几乎不敏感。可转债价格由正股决定更多。零息债券对利率敏感度最高。'
+          },
+          {
+            id:'b-t-2', title:'收益率曲线交易',
+            brief:'利用不同期限收益率的相对变化交易(而非赌绝对方向)，对冲了大部分利率方向风险。',
+            practical:'① 陡峭化交易（买短债+卖长债/或做多2年期做空10年期期货）=押注曲线变陡。② 平坦化交易（卖短债+买长债）=押注曲线变平。③ 策略最适合在曲线极端形态后（极度倒挂或极度陡峭）执行——均值回归是核心逻辑。④ 中国国债期货合约：TS（2年）/TF（5年）/T（10年），可组合进行曲线交易。',
+            ref:'利差历史分位：2s10s处于10年5%分位以下=极度平坦，可做陡峭化；>95%分位=极度陡峭，可做平坦化。中国2s10s利差历史均值60-80bp。',
+            combo:'曲线交易+通胀预期：通胀预期上升→曲线陡峭化（长端涨幅大于短端）。曲线交易+央行前瞻指引：央行"暂停加息"信号=曲线可能陡峭化。',
+            case:'2023年3月硅谷银行事件后市场预期美联储暂停加息，2年期收益率从5%暴跌至3.8%，10年期从4%降至3.4%。2s10s利差从-100bp收窄至-50bp。做多2年+做空10年的平坦化交易获利。',
+            boundary:'中国国债期货仅3个期限品种，曲线策略精细度有限。做空债券需要融券或期货做空工具。利差在极端情况下可长时间偏离均值（"新常态"）。'
+          },
+          {
+            id:'b-t-3', title:'国债期货技术分析',
+            brief:'将股票技术分析方法应用于国债期货，技术形态同样有效但逻辑相反（涨=利率跌=弱经济）。',
+            practical:'① T（10年国债期货）是A股债市最核心的交易品种，流动性好。② 趋势线/均线/MACD全部适用，但需理解"涨=债牛=经济弱"。③ 持仓量变化是判断趋势持续性的关键：增仓上涨=债牛确立；减仓上涨=空头回补。④ 关注交割月基差收敛对技术图形的影响。',
+            ref:'T主力合约：价格区间约100-103元，一手保证金约3-4万元。TF约101-103元，TS约101-101.5元。成交量：T日均约5-10万手，TF约3-5万手。持仓量>10万手=活跃。',
+            combo:'国债期货+股票：股债呈跷跷板（经济好=股涨债跌）。国债期货+商品：商品涨（通胀预期）→债券跌。国债期货+外汇：人民币贬值→外资卖中国债券→债跌。',
+            case:'2023年T主力从101.5涨至102.2时量仓齐升（确认债牛）。102.2形成双顶+持仓下降（多头平仓）+MACD顶背离，技术三重确认。随后T跌至101.0。国债期货的技术分析与股票一样可靠——2023年T的MACD顶背离完美预警了债市回调。',
+            boundary:'国债期货成交量远小于股指期货，技术形态可能"滑点"。交割月基差收敛会扭曲图形。非活跃合约持仓量无参考意义。'
+          },
+          {
+            id:'b-t-4', title:'信用利差走势',
+            brief:'信用利差趋势性变化比单日波动更有意义，其拐点往往提前于经济周期2-3个月。',
+            practical:'① 利差趋势走阔（>200bp）+加速=信用风险上升，减仓信用债。② 利差趋势收窄+成交量放大=信用环境改善，增配信用债。③ 利差走阔过程中若伴随成交量锐减（流动性枯竭）=最危险的阶段。④ 关注不同评级利差的分化（AAA vs AA）——分化扩大=市场在避险。',
+            ref:'中国AAA企业债与国债利差：正常50-100bp。趋势走阔信号：月累计走阔>20bp且趋势确认。信用利差对经济周期的领先性：约2-3个月。',
+            combo:'信用利差+PMI新订单指数：PMI新订单回升→企业盈利改善→利差应收窄。利差+高频经济数据：高炉开工率/耗煤量等数据改善→利好信用债。',
+            diagram: DIAGRAMS.creditSpread,
+            case:'2021年12月中高收益债信用利差从300bp趋势性走阔至2022年11月的2000bp+，地产大面积违约，地产股跌60%。2023年Q1利差从高点回落至500bp，地产债反弹。利差的领先性再次得到验证——先于经济拐点约2-3个月。',
+            boundary:'个券利差受流动性溢价影响（小规模个券价差大）。中国信用债刚兑打破时间短，历史数据样本不足。利差在极端高位时可能出现"有价无市"——报价不代表实际可成交价。'
+          },
+          {
+            id:'b-t-5', title:'债券ETF趋势',
+            brief:'债券ETF提供了像交易股票一样交易债券的方式，其技术图形反映整体债市趋势。',
+            practical:'① TLT（20年+美国国债ETF）是判断长端利率的最佳代理变量。② 当TLT的RSI<30时，长债通常处于极度超卖状态，是买入机会（需注意趋势方向）。③ The TLT的布林带带宽达到极端时（<5%带宽）=变盘信号。④ HYG（高收益债ETF）走势反映风险偏好和信用环境。',
+            ref:'TLT久期~18年，费用率0.15%，日均成交额>100亿美元。HYG费用率0.49%，日均成交约10亿美元。LQD（投资级公司债）费用率0.14%。中国债券ETF规模小，最活跃为十年国债ETF（511300）。',
+            combo:'TLT+纳指100（QQQ）：两者在加息周期中同跌，降息预期中同涨，风险偏好驱动。TLT+黄金：都在降息预期中上涨。',
+            case:'2023年10月TLT跌至82美元，RSI<30（超卖），月线级别底部放量。此后3个月反弹至100（涨幅22%），远超纳指同期的8%。TLT在极端位置的技术信号甚至优于股票。中国十年国债ETF在2023年8月降息后创出新高，趋势明确。',
+            boundary:'ETF价格可能相对净值有折溢价。中国债券ETF市场规模小、流动性不足。ETF跟踪误差（追踪久期与实际不完全匹配）会影响技术精度。'
+          },
+          {
+            id:'b-t-6', title:'MOVE波动率指数',
+            brief:'债市的"恐慌指数"——衡量国债期权隐含波动率，反映债券市场的恐惧和贪婪。',
+            practical:'① MOVE<80=极度平静（可能是风暴前的宁静）。② MOVE>120=债市恐慌（避险资产上涨/股债同跌）。③ MOVE飙升时短期利率剧烈波动——降久期或做空曲线。④ MOVE从顶部回落时是重启债券多头的好时机。',
+            ref:'MOVE指数历史均值约90-100。<70=极低波动（2017年），>150=恐慌（2008/2020年），>200=极度恐慌（2020年3月/2023年3月硅谷银行事件）。中国无直接对应指标，可用国债期权隐含波动率近似。',
+            combo:'MOVE+VIX：两者同升=全面恐慌（2008年/2020年），此时债券和股票同跌（流动性危机模式）。MOVE+信用利差：MOVE↓+信用利差↓=债市最佳环境（低波动+高偏好）。',
+            case:'2023年3月硅谷银行危机MOVE指数从90飙至198（15年高点），10年美债收益率一周波动70bp（从3.9%至3.4%）。2023年11月MOVE回落至100以下，美债企稳。MOVE的用途不在于交易本身，而是判断债市是否"过度拥挤"——高MOVE时做任何头寸都要更小心。',
+            boundary:'MOVE仅覆盖美国国债期权市场，无中国直接替代。低MOVE不代表债市必然反转——可能是趋势中的平静期。MOVE是反映市场情绪的指标，不是预测工具。'
+          },
+          {
+            id:'b-t-7', title:'流动性分析',
+            brief:'债券二级市场的交易难易程度，流动性枯竭是债市最大的隐性风险（比利率风险更致命）。',
+            practical:'① 买卖价差（Bid-Ask Spread）：国债1-5bp正常，信用债10-50bp正常，>100bp=流动性枯竭。② 报价深度：单笔交易对价格的影响幅度。③ 流动性随市场情绪的恶化速度极快——平时流动的债券在危机中可能"天价价差"。④ 持有至到期策略不意味着流动性风险不存在（可能被迫在差时点卖出）。',
+            ref:'买卖价差参考：国债1-5bp，政金债2-8bp，AAA信用债5-20bp，AA信用债20-100bp。换手率：国债月均换手率>50%，信用债<20%。报价深度：>5000万为良好。',
+            combo:'流动性+信用利差：流动性风险往往在信用利差走阔后期爆发。流动性+回购利率：回购利率飙升→流动性紧张→信用债价差扩大→最危险的负反馈。',
+            case:'2022年11月中国债市理财赎回潮：R007从1.5%飙至3.0%，信用债买卖价差从10bp扩大至100bp+（实际无人接盘）。基金折价5%才卖出AAA信用债。不是利率或信用问题——纯粹是流动性危机。流动性危机一旦爆发，最好的应对是持有现金等待。',
+            boundary:'流动性是动态的——国债也可能在数据公布前突然变差。价格的技术形态在流动性差时不可靠（最后一笔成交价不代表真实市场）。'
+          },
+          {
+            id:'b-t-8', title:'期限结构交易',
+            brief:'押注收益率曲线特定段的形状变化，从利率的相对变动中获利（方向中性策略）。',
+            practical:'① 陡峭化做多（买短+卖长）：看2Y涨（收益率↓）快于10Y。② 平坦化做空（卖短+买长）：看10Y涨快于2Y。③ 中国国债期货组合：做多TS+做空T=陡峭化；做空TS+做多T=平坦化。④ 配置比例按DV01对冲（保证利率变动1bp时多头和空头的盈亏相等）。',
+            ref:'DV01对冲比例：T(久期~8年) vs TF(久期~4.5年)——2份TF对冲1份T久期。T vs TS(久期~2年)——4份TS对冲1份T。利差极端值参考：2s10s历史5%分位和95%分位。',
+            combo:'期限结构+货币政策预期：加息末期曲线通常平坦→陡峭化（做陡）。期限结构+经济数据：就业/零售数据超预期→曲线可能陡峭化（长端利率上升更快）。',
+            case:'2023年美联储暂停加息，2年和10年同时下行但10年下行更快（市场交易衰退），2s10s利差从-100bp收窄至-30bp。做多10年+做空2年的平坦化交易（买TLT+卖SHY）成功获利。中国2023年8月降息后短端利率下行更快，曲线陡峭化，做多TS+做空T获利。',
+            boundary:'中国做空债券工具不足（TS期货流动性弱）。境外做空长债的Carry成本（正利差环境下持续付息）可能侵蚀收益。曲线形状在国债大规模发行期间可能脱离基本面。'
+          }
+        ]
+      }
+    }
+  },
+
+  futures: {
+    label: '期货',
+    threads: {
+      fundamental: {
+        icon: '📊', label: '基本面分析',
+        points: [
+          {
+            id:'f-f-1', title:'供需平衡表',
+            brief:'系统性梳理产量、消费、库存和进出口，判断供需缺口和价格趋势的最底层框架。',
+            practical:'① 关注"预期差"——平衡表公布值与市场预期的偏差比平衡表本身更重要。② 关键变量跟踪：原油看OPEC+产量和全球炼厂开工率；农产品看USDA每月报告；黑色系看中国房地产开工+基建投资。③ 当库存持续下降（>3个月）→供不应求→多头方向。④ 关注"边际变化"——即使库存高，如果去库速度超预期也是利好。',
+            ref:'数据获取时间：USDA每月10日左右、OPEC月报每月中、IEA月报每月中。EIA原油库存每周三发布。中国地产数据每月15日发布。临界值：库存<5年均值=紧张，>5年均值+10%=宽松。',
+            combo:'平衡表+升贴水结构：Backwardation（近月>远月）=库存紧张=平衡表显示短缺。平衡表+基差：基差走强（现货涨得比期货快）=平衡表在收紧。',
+            diagram: DIAGRAMS.supplyDemand,
+            case:'2023年Q3沙特+俄罗斯额外减产166万桶/日，EIA数据显示全球库存持续下降（月均减少1.5亿桶），平衡表从过剩转短缺。布伦特从72涨至97。当2024年Q1增产预期浮现，平衡表预期逆转，油价回落至75。平衡表的预期差是趋势交易的核心。',
+            boundary:'平衡表基于估算数据——中国原油战略储备数据不透明，实际消费可能偏差很大。突发地缘事件（红海危机）瞬间打破平衡表假设。平衡表适用于3-6个月的中期判断，短期1-2周无效。'
+          },
+          {
+            id:'f-f-2', title:'库存周期',
+            brief:'企业库存的3-4年周期性波动是商品价格的核心驱动——周期切换时商品趋势最明确。',
+            practical:'① 主动去库（价格跌+需求差）：空头持有，减仓等待反转信号。② 被动去库（价格企稳+需求回暖）：最确定的做多窗口——库存低+需求改善。③ 主动补库（价格上涨+生产扩张）：多单减仓（春天已过半）。④ 被动补库（需求放缓+库存累积）：做空信号。',
+            ref:'中国工业产成品库存同比增速：<5%=去库末端、5-10%=补库初段、>10%=补库中段。PPI同比：库存周期底部时PPI通常<0。周期切换信号：PMI原材料库存+产成品库存的组合变化。',
+            combo:'库存周期+美林时钟：主动去库≈美林衰退期（债券好）；被动去库≈复苏期（股票好）。库存周期+基差：去库末端基差走强（现货紧），补库末端基差走弱。',
+            diagram: DIAGRAMS.inventoryCycle,
+            case:'2022年Q4至2023年Q2中国进入主动去库（工业库存同比从20%降至5%，PPI从-0.7%降至-5.4%），螺纹钢从4200跌至3300。2023年Q3进入被动去库（库存低+需求企稳），螺纹钢反弹至3900。库存周期判断为商品交易提供了宏观方向。',
+            boundary:'"碳中和"供给约束拉长了补库周期（限产导致供给不能随需求扩张）。库存数据滞后1-2个月。微观仓库调研常比官方数据更及时。不同商品库存周期节奏不同。'
+          },
+          {
+            id:'f-f-3', title:'基差分析',
+            brief:'现货价格与期货价格的差值，是期货市场最真实的供需信号和确定性最高的交易逻辑。',
+            practical:'① 基差极端大（>20%）时做基差回归（买基差收窄的品种）。② 正基差（现货>期货）=现货紧缺→做多近月做空远月。③ 负基差（现货<期货）=供给充裕→做空近月做多远月。④ 临近交割月时基差必然收敛这一确定性使基差回归成为胜率最高的策略之一。',
+            ref:'基差率（基差÷现货价）：<5%正常、5-15%偏离、>15%极端。回归时间：通常2-4周（交割月前1个月开始加速收敛）。正基差回归做多成功率约70%，负基差回归做空成功率约65%。',
+            combo:'基差+库存：库存低+高正基差=确定性最高的做多信号。基差+期限结构：正基差+Back结构=加强信号。',
+            diagram: DIAGRAMS.basisAnalysis,
+            case:'2023年8月纯碱现货3000、近月期货1800，基差1200元（40%）。厂家库存极低（历史最低水平）。高基差强烈看涨信号。随后1个月期货从1800涨至2600，基差回归至400元。基差的"引力"效应是期货市场最确定性的交易逻辑之一。',
+            boundary:'交割品质量差异（铁矿石的现货指标与期货标的物不一致）导致基差无法完全收敛。临近交割月需注意流动性风险和交割资质。极端行情中基差可维持高位远超预期。'
+          },
+          {
+            id:'f-f-4', title:'成本支撑',
+            brief:'商品的生产成本构成价格下限——跌破成本时高成本产能退出，供给自动收缩。',
+            practical:'① 价格低于行业完全成本（尤其低于90分位成本）→供给收缩信号→逐步布局多单。② 跟踪"利润"指标——利润率从正转负的持续时间（>3个月）→减产压力加大。③ 成本是移动目标——原料价格在变，需动态跟踪。④ 中国国企矿山可能在亏损时仍不减产（影响成本支撑有效性）。',
+            ref:'不同商品成本线：焦煤完全成本约1300-1500元/吨、螺纹钢电炉成本约3800-4000元/吨、铜全球平均现金成本约4000美元/吨。利润率<-10%且持续3个月=减产发生。',
+            combo:'成本支撑+基差：价格跌至成本线时若基差走强（现货抗跌）=筑底的早期信号。成本+库存：价格在成本附近+库存开始下降=底部基本确认。',
+            case:'2022年Q3焦煤跌至1300元/吨，已经低于山西部分煤矿完全成本线1400元。独立焦化企业开工率从75%降至50%，供给收缩，焦煤在1300附近见底反弹至2000。螺纹钢2023年5月跌至3400（接近电炉成本），随后减产反弹。',
+            boundary:'成本动态变化——焦煤跌了、炼焦煤的成本线也在下移。国企矿山亏损不减产（社会责任）。技术进步持续降低生产成本，"成本支撑"是移动目标。'
+          },
+          {
+            id:'f-f-5', title:'季节性规律',
+            brief:'商品在年内因气候、农时、消费淡旺季呈现可预测的价格波动，提供统计概率优势。',
+            practical:'① 螺纹钢：传统旺季"金三银四"+"金九银十"前1-2个月布局多单。② 原油：夏季出行旺季（Q2-Q3）通常上涨，冬季取暖季（Q4-Q1）受库存影响。③ 农产品：收获季前后（9-11月）有季节性低点，然后逐步走高。④ 液化石油气LPG：冬季供暖季（10月-次年2月）供需最紧。',
+            ref:'季节性统计：LPG冬季比夏季平均高15-20%。螺纹钢5月比3月平均低5%。原油Q2平均涨幅约3-5%。季节性回到测胜率60-70%。最佳入场时间：旺季前6-8周布局，旺季中后段减仓。',
+            combo:'季节性+库存：库存处于季节低位时季节性规律更强。季节性+基差：季节性旺季前基差通常走强。',
+            case:'2022年10月LPG从4800启动冬储行情（供暖需求+炼厂减供），2022年12月涨至5800，涨幅21%。每年4-6月淡季则是LPG的空头窗口。季节性模式在过去5年有约70%的胜率。但需注意——2020年疫情打破了所有季节性规律。',
+            boundary:'极端宏观环境（危机/战争）完全打破季节性。全球变暖改变传统取暖季长度。季节性规律在缓慢变化——需每年回测更新。季节性提供概率优势，非确定性。'
+          },
+          {
+            id:'f-f-6', title:'COT 持仓报告',
+            brief:'CFTC每周公布期货持仓数据，跟踪商业（套保）和投机（CTA/对冲基金）持仓——极端位置是反向指标。',
+            practical:'① 投机净多仓处于历史极值（>90%分位）→市场过于拥挤→行情临近反转。② 商业套保头寸（通常逆势）大量增加→价格可能过高或过低。③ 关注"净多头变化"——连续3周显著变化（>10%）比绝对值更有意义。④ 中国期货无COT，可用持仓量和仓单数据替代。',
+            ref:'参考原油：投机净多头>40万手=拥挤（通常伴随见顶）。投机净多头<10万手=极度悲观（见底）。玉米：投机净空头>15万手=价格见底信号。COT更新频率：每周二公布上周二数据（滞后7天）。',
+            combo:'COT+技术分析：COT极端值+技术面反转形态=高胜率组合。COT+基差：COT极端+基差走强=更加确认。',
+            case:'2022年3月原油投机净多仓50万手（历史95分位），WTI 130美元。商业套保盘大量增加。随后两个月油价跌至100美元。2023年12月原油净多仓跌至15万手（历史低位），油价随后见底反弹。COT极端值是有力的反向指标。',
+            boundary:'COT数据滞后一周，不含期权头寸。强势趋势中投机持仓可在极端水平维持数月。中国期货无COT——跟踪交易所公布的持仓排名和仓单数据。'
+          },
+          {
+            id:'f-f-7', title:'升贴水结构',
+            brief:'期货不同月份合约的价格关系——Backwardation（近>远，贴水）vs Contango（远>近，升水）反映供需松紧。',
+            practical:'① Back结构（Backwardation）=现货紧缺→做多近月（或者做多远月会有"展期损失"）。② Con结构（Contango）=供过于求→做空近月（或者做空近月有"展期收益"）。③ 结构转换（Back→Con或Con→Back）往往伴随大行情。④ 以升贴水判断品种的"天然属性"——农产品多Back，能化多Con。',
+            ref:'Back vs Con判定标准：近月-远月>0为Back，<0为Con。关键信号：近月-次月价差（M1-M2）在历史90%分位以上=极端Back。布伦特原油历史上多在Back结构（因为库存成本高）。农产品收获季前后结构会切换。',
+            combo:'升贴水+库存：Back结构+库存低=确认。升贴水+基差：Back+正基差=做多信号。',
+            diagram: DIAGRAMS.contangoBack,
+            case:'2022年原油从Back结构（近月130、远月80）转为Contango（近月70、远月75），标志着供给紧张缓解。2023年Q3沙特减产后再次转Back（近月97、远月90）。铜在2023年Q4库存历史低位时维持Back，支持价格高位运行。结构转换是商品期货最重要的宏观信号之一。',
+            boundary:'仓储成本高的品种（天然气）天然Contango。临近交割月因逼仓（轧空）效应扭曲。部分品种无连续数据（中国期货有换月缺口）。'
+          },
+          {
+            id:'f-f-8', title:'宏观对商品影响',
+            brief:'美元、利率、PMI等宏观变量对商品有系统性影响——不同商品敏感度差异极大。',
+            practical:'① 美元与商品指数（CRB）呈约-0.6的负相关——美元跌→商品涨。② 黄金最敏感（-0.8），农产品最不敏感（-0.3）。③ PMI>50预示工业品需求扩张→做多铜/螺纹钢。④ 实际利率与黄金负相关——实际利率↑→黄金↓。⑤ 关注全球制造业PMI——全球同步回升=商品牛市。',
+            ref:'美元指数与黄金：DXY跌1%→黄金涨约1.2%。实际利率（10Y TIPS收益率）<0对黄金强支持。全球制造业PMI>50持续3个月=商品需求回暖。中国PMI对黑色系影响大于全球PMI。',
+            combo:'美元+铜：美元弱+中国PMI好=铜的"双轮驱动"。实际利率+金：实际利率↓+央行购金=黄金最强背景。PMI+库存：PMI回升+库存低位=做多窗口。',
+            case:'2023年10月美元指数冲高至107，伦铜从8500跌至7850，黄金从2000跌至1820。2024年Q1美元回落至103，黄金涨至2100+创历史新高。美元的宏观影响在1-3个月尺度上甚至超过商品自身的供需基本面。',
+            boundary:'黄金2022年的"抗跌"（加息+美元强但黄金不跌）说明央行购金在改写定价逻辑。不同商品的"金融属性"和"商品属性"在不同阶段主导地位不同。农产品受宏观影响最小。'
+          },
+          {
+            id:'f-f-9', title:'产业链传导',
+            brief:'价格沿产业链从上游（原料）到下游（成品）传导，利润在产业链各环节的动态分配决定交易策略。',
+            practical:'① 当产业链利润集中在某一环节时→做空该环节+做多其上下游。② 钢厂利润=螺纹钢价格-(焦炭×0.5+铁矿石×1.6)。利润为负时→钢厂减产→抑制原料需求→做空原料+做多成材。③ 利润在历史极端值（>90%或<10%分位）时大概率回归。',
+            ref:'利润指标：钢厂利润正常200-500元/吨。吨焦利润正常50-200元/吨。炼化利润（裂解价差）正常10-20美元/桶。利润分位>90%=做空利润，<10%=做多利润。传导时滞：1-4周。',
+            combo:'产业链利润+库存：利润为负+原材料库存高=减产压力大。产业链利润+开工率：利润持续为负+开工率下降=确认减产。',
+            case:'2023年Q3焦煤暴涨导致螺纹利润跌至-200元/吨（吨钢亏损），随后全国钢厂高炉开工率从85%降至75%。做空焦煤+做多螺纹的"做空利润"策略1个月将利润从-200修复至+200。焦煤从2300跌至1800，螺纹持稳。',
+            boundary:'长协合约（电煤）阻断价格传导。一体化企业（宝武自有矿山）利润分布不同。传导时滞1-4周。产业链利润分析需深入了解每个环节的产能约束和库存。'
+          }
+        ]
+      },
+      technical: {
+        icon: '📈', label: '技术面分析',
+        points: [
+          {
+            id:'f-t-1', title:'趋势跟踪策略',
+            brief:'顺势而为不测顶底——海龟交易法则证明即使在低胜率(35-40%)下，趋势跟踪仍能持续盈利。',
+            practical:'① 突破入场：价格突破过去20日最高/最低点入场。② 止损：初始止损设10日低点/高点，随后移动止损（10日低点做多止损、10日高点做空止损）。③ 盈亏比>3:1才交易（预期盈利至少是风险的3倍）。④ 交易系统必须：无条件的、有纪律的、机械的执行——最难的是"拿得住"盈利单。',
+            ref:'海龟法则参数：突破20日入场、10日止损。资金管理：单笔风险≤总资金1%。仓位计算：风险/ATR × 合约乘数。胜率35-40%、盈亏比3-4:1、年化收益20-30%（回测数据）。',
+            combo:'趋势跟踪+多周期过滤：周线确认趋势方向→只在趋势方向上做突破。趋势+成交量确认：突破时放量+增仓=可靠性提升。',
+            diagram: DIAGRAMS.trendFollow,
+            case:'原油2023年6月突破20日高点72美元入场做多，止损10日低点68美元（风险4美元）。此后趋势延续至97美元，跌破10日低点92美元平仓。盈利20美元，风险4美元，盈亏比5:1。趋势跟踪靠的就是"小亏大赚"——10次交易6次亏、4次赚，整体正期望。',
+            boundary:'震荡市中趋势跟踪会连续亏损（连续止损10次+）。高杠杆品种隔夜跳空风险。需要大资金容量（每笔只押1%本金）。心理考验极大——人类天然倾向于"止盈过早、扛单不止损"。'
+          },
+          {
+            id:'f-t-2', title:'ATR 波动率止损',
+            brief:'用平均真实波幅（ATR）设定动态止损位——让止损与市场"同频呼吸"，避免被噪音扫出。',
+            practical:'① 止损=入场价±2×ATR(14)——高波动时放宽止损、低波动时收紧。② ATR还用于仓位计算：手数=风险金÷(ATR×合约乘数)。③ ATR缩小说明波动率下降，警惕"蓄力突破"（带宽收缩后往往有大行情）。④ 不同品种的ATR数值不同——跨品种比较时用ATR/价格（百分比ATR）。',
+            ref:'ATR(14)参考：原油约1.5-3美元/桶、螺纹钢约30-60元/吨、黄金约15-30美元/盎司。百分比ATR：原油2-4%、螺纹钢1-2%、黄金0.5-1%。2×ATR止损在80%的行情中不被触及（历史回测）。',
+            combo:'ATR+布林带：ATR与布林带宽高度相关——ATR下降+带宽收窄=变盘前兆。ATR+仓位管理：用ATR分配仓位——低波动品种可开更大仓位。',
+            case:'豆油2023年ATR(14)在100点左右，用2×ATR=200点止损。如果用固定止损100点会被频繁扫出。当ATR缩小至60点时止损缩窄至120点。ATR让止损与市场的"呼吸节奏"一致——在正常噪音范围内持仓不受干扰。',
+            boundary:'低波动之后通常跟高波动（波动率聚集效应），此时2×ATR止损可能偏紧。ATR不能指示方向——只是告诉你市场有多"活跃"。极端行情中单日波动可超10倍ATR。'
+          },
+          {
+            id:'f-t-3', title:'持仓量与价格',
+            brief:'持仓量的增减配合价格方向，确认趋势的真实性——"有量有行情，无量则虚幻"。',
+            practical:'① 增仓上涨（持仓↑+价↑）=新多入场→趋势健康、可持有。② 减仓上涨（持仓↓+价↑）=空头平仓→趋势末端、减仓。③ 增仓下跌（持仓↑+价↓）=新空入场→趋势确立、顺势做空。④ 减仓下跌（持仓↓+价↓）=多头出局→跌势尾声、逐步平空。',
+            ref:'持仓变化判定：比前5日均值变化±10%以上为显著。增仓上涨的理想比例：成交量↑20%+持仓↑10%。中国商品期货单个品种持仓量可达50-200万手（螺纹钢可达300万手）。',
+            combo:'持仓量+成交量：价涨+量增+仓增=三重确认。持仓量+价格形态：突破平台时放量+增仓=真突破。',
+            diagram: DIAGRAMS.positionPrice,
+            case:'2023年Q1铁矿石从700涨至900，持仓从100万手增至150万手（增仓上行），趋势健康。2023年5月铁矿石从900涨至920，持仓从150万手降至110万手（减仓上行）——空头平仓推动的"虚涨"，随后加速暴跌至700。增仓是燃料，减仓是退潮。',
+            boundary:'中国日内平仓手续费优惠导致日内交易占比高，持仓数据含噪音。移仓换月期间持仓数据不反映真实方向。涨跌停时持仓冻结。'
+          },
+          {
+            id:'f-t-4', title:'跨期套利',
+            brief:'利用同一品种不同月份合约的价差波动获利，方向基本中性——收益来自价差的统计回归。',
+            practical:'① 关注"价差回归"逻辑：价差在历史极端（>90%或<10%分位）时做反向。② 跨期买近卖远（做多价差）=预期近月比远月强（库存低/现货紧）。③ 跨期卖近买远（做空价差）=预期近月比远月弱（库存高/宽松）。④ 价差交易的最大优势是对冲了大部分系统性风险。',
+            ref:'价差交易规则：保证金约30-50%（交易所优惠）。统计回归周期：通常2-8周。价差在历史2个标准差之外=极端机会。持仓风险：隔夜风险比单边小60-70%。',
+            combo:'跨期+基差：基差走强时价差通常也走强（近月强于远月）。跨期+库存：库存变化是价差的核心驱动。',
+            case:'豆粕1-5价差每年11-12月（南美天气炒作+国内消费旺季）倾向于走强。2022年11月价差从200涨至550（做多价差175%保证金收益）。2023年6月玉米9-1价差在历史高位（C9-C1=-30）但季节性不支持继续走弱，做空价差（卖9买1）在-30→-10区间获利。',
+            boundary:'非主力合约流动性不足（买卖价差大）。极端行情中近远月同步涨跌，价差不回归。做空近月可能遭遇逼仓。保证金政策变化。'
+          },
+          {
+            id:'f-t-5', title:'突破交易法',
+            brief:'在价格突破关键支撑/阻力位时顺势入场，捕捉趋势加速段——"横有多长，竖有多高"。',
+            practical:'① 平台突破是最可靠的突破类型——横盘整理时间越长，突破后的行情越大。② 突破需要成交量+持仓量配合确认：放量30%+增仓10%=真突破。③ "假突破"过滤：价格突破后3天守住或3%以上=有效。④ 平台高度（箱体宽度）=突破后的最小目标涨幅。',
+            ref:'平台突破最小目标=平台高度+突破位（如平台上下轨差200点→突破后目标200点）。假突破比例约50%。真突破确认条件：突破日成交量>20日均量30%+持仓增10%+3天不跌破突破位。',
+            combo:'突破+布林带：布林带从挤压状态开口扩张+价格突破=极强信号。突破+MACD：价格突破平台+MACD零轴上方金叉=趋势加速。',
+            case:'2023年7月纯碱主力在1600-1800横盘2个月（布林带宽收窄至10%以下）。7月中旬放量（成交量+50%）增仓（持仓+20%）突破1800，最小目标200点=2000。随后一路涨至2600（远超目标）。"横有多长竖有多高"——2个月的横盘对应了800点的涨幅。',
+            boundary:'震荡市中突破胜率低于30%。假突破是常态（超过50%突破为假）。算法交易主导下"突破陷阱"越来越多。突破止损设于突破位下方1ATR。'
+          },
+          {
+            id:'f-t-6', title:'凯利公式仓位管理',
+            brief:'量化最优下注比例，帮助交易者在长期中最大化几何增长率——最核心的不是赚多少而是活得久。',
+            practical:'① 凯利公式：f = (bp-q)/b。每日计算你的策略的胜率p和盈亏比b。② 激进者用"全凯利"（实际风险较大），稳健者用"半凯利"（f/2），保守者"四分之一凯利"。③ 凯利告诉你的是上限——永远不要超过凯利值。④ 多品种交易时总仓位不能超过各品种凯利值的总和。',
+            ref:'典型交易策略的凯利值：趋势跟踪（胜率35%、盈亏比3.5）= f=(3.5×0.35-0.65)/3.5=16%。半凯利=8%。日内短线（胜率55%、盈亏比1.2）= f=(1.2×0.55-0.45)/1.2=17.5%。重要法则：总资金回撤超过20%时减半仓位。',
+            combo:'凯利+ATR仓位计算：先用凯利算出"投入这一策略的总资金比例"，再用ATR算出"具体手数"。凯利+多品种：相关性强品种的凯利值不能简单相加。',
+            diagram: DIAGRAMS.kellyFormula,
+            case:'一个期货策略历史胜率55%、盈亏比1.5:1。凯利比=(1.5×0.55-0.45)/1.5=25%。如果全仓交易（100%），连续5次亏损就损失95%本金。按半凯利12.5%操作，同期仍保留50%本金。凯利的核心价值不是让你最大化收益，而是防止一次亏损出局。',
+            boundary:'凯利假设胜率和盈亏比恒定——实际中不断变化。即使半凯利20%仓位在连续亏损时也很难受。凯利不适用于高相关性多品种组合。交易者心理承受力决定了实际仓位必须小于凯利值。'
+          },
+          {
+            id:'f-t-7', title:'多周期分析',
+            brief:'大周期定方向（周线/月线），小周期定执行（日线/小时线）——多周期共振>单一周期。',
+            practical:'① 周线确定趋势方向（是否做多/做空）→日线确认波段节奏→小时线选择精确入场点。② 只做大周期趋势方向上的交易（如周线多→只在日线回调时做多）。③ 大周期震荡时减少交易——趋势盈利的敌人是震荡。④ 三个周期信号矛盾时（周多+日空+小时多）=盘整——不做是最好策略。',
+            ref:'周期层次：月线>周线>日线>4小时>1小时。胜率：多周期同向约65%，单周期约50%。大周期（周线）的一个信号约等于小周期（小时线）5-10次信号的有效性。',
+            combo:'多周期+趋势线：大周期趋势线支撑+小周期反转形态=最佳入场。多周期+MACD：大周期MACD方向决定交易方向+小周期MACD信号决定入场时点。',
+            case:'2023年Q4螺纹钢周线下跌（跌破MA60），日线反弹至3900阻力位受压，小时线顶背离形成。三个周期共振看空——做空的胜率极高。日线反弹结束入场做空，一周跌至3700。多周期共振的胜率（约70%）远高于单一周期（约50%）。',
+            boundary:'多周期信号常矛盾——此时最好不做。不同品种的周期"节奏"不同：原油的波动节奏比白糖快得多。多周期分析不解决"最终看哪个周期"的终极问题——仍需交易者主观决策。'
+          },
+          {
+            id:'f-t-8', title:'波动率交易',
+            brief:'利用期权隐含波动率（IV）与历史波动率（HV）的偏差交易，方向中性——赚波动率的钱而非方向的钱。',
+            practical:'① IV>HV且溢价>20%=做空波动率（卖出期权宽跨式，赌IV回归）。② IV<HV且折价>20%=做多波动率（买入期权，赌IV回升或大行情）。③ 做空波动率的核心风险是"尾部事件"（黑天鹅）。④ 做多波动率的长期胜率低（IV长期高于HV），但单次收益可能很高。',
+            ref:'IV显示拥挤程度：IV百分比>80%=极度恐慌（卖波动率窗口）；<20%=极度平静（买波动率窗口）。沪深300ETF期权IV正常15-25%。原油期权IV正常25-40%。做空波动率年化收益约5-10%（但承担跳空风险）。',
+            combo:'波动率+趋势跟踪：趋势明确时波动率倾向于走高→做多波动率+趋势方向。波动率+COT：COT显示拥挤+波动率高位=反转概率大。',
+            case:'2023年3月硅谷银行危机，原油期权IV从25%飙至65%。在IV=60%时卖出宽跨式（卖虚值看涨+看跌），赌IV在情绪稳定后回归。2周后IV回落至35%，波动率交易的收益不依赖油价方向——只要油价在预期范围内波动即可获利。',
+            boundary:'裸卖期权在极端行情中风险无限（理论上亏损无上限）。IV可长期高于HV（波动率溢价不回归）。中国商品期权市场深度有限。波动率交易需要不断Delta对冲才能实现"纯波动率暴露"。'
+          }
+        ]
+      }
+    }
+  }
+};
+
+// ======================== 渲染引擎 ========================
+const contentEl = document.getElementById('content');
+const tabs = document.querySelectorAll('.tab');
+const progressFill = document.getElementById('progressFill');
+
+function renderDiagram(diagram) {
+  if (!diagram) return '';
+  return `<div class="diagram-box">${diagram}<div class="diagram-caption">↑ 图解说明</div></div>`;
+}
+
+function renderModule(key) {
+  const mod = data[key];
+  if (!mod) return '';
+  let html = `<div class="module active" data-module="${key}">`;
+  for (const [tk, th] of Object.entries(mod.threads)) {
+    html += `<div class="thread-header"><div class="icon ${tk}">${th.icon}</div><h2>${th.label}</h2><span class="count">${th.points.length} 个知识点</span></div>`;
+    th.points.forEach((pt, i) => {
+      html += `<div class="card-wrap" data-id="${pt.id}"><div class="card" data-point-id="${pt.id}">
+        <div class="card-header"><span class="num">${i+1}</span><span class="title">${pt.title}</span><span class="arrow">▼</span></div>
+        <div class="card-body">
+          <div class="brief">${pt.brief}</div>
+          <div class="section-label">🎯 实战操作指南</div>
+          <div class="practical-box">${pt.practical}</div>
+          <div class="section-label">📏 关键数值参考</div>
+          <div class="ref-box">${pt.ref}</div>
+          <div class="section-label">🔗 多指标组合</div>
+          <div class="combo-box">${pt.combo}</div>
+          ${pt.diagram ? renderDiagram(pt.diagram) : ''}
+          <div class="tag-case">📋 实战案例</div>
+          <div class="case-box">${pt.case}</div>
+          <div class="tag-boundary">⚠️ 使用边界</div>
+          <div class="boundary-box">${pt.boundary}</div>
+        </div>
+      </div></div>`;
+    });
+  }
+  html += '</div>';
+  return html;
+}
+
+function switchModule(key) {
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.module === key));
+  contentEl.innerHTML = renderModule(key);
+  contentEl.querySelectorAll('.card-header').forEach(h => {
+    h.addEventListener('click', function() {
+      this.closest('.card').classList.toggle('open');
+    });
+  });
+  setTimeout(() => {
+    if (observer) observer.disconnect();
+    observeCards();
+  }, 50);
+}
+
+let observer = null;
+function observeCards() {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.card-wrap').forEach(el => {
+    if (!el.classList.contains('visible')) observer.observe(el);
+    else el.classList.add('visible');
+  });
+}
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', function() {
+    switchModule(this.dataset.module);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+window.addEventListener('scroll', function() {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  if (h > 0) progressFill.style.width = Math.min(100, (window.scrollY / h) * 100) + '%';
+}, { passive: true });
+
+switchModule('stocks');
+
+// 支持 hash 导航（PWA shortcuts 和外部链接跳转）
+function initFromHash() {
+  var hash = window.location.hash.replace('#', '');
+  if (hash && data[hash]) {
+    switchModule(hash);
+  }
+}
+window.addEventListener('hashchange', function() {
+  var hash = window.location.hash.replace('#', '');
+  if (hash && data[hash]) switchModule(hash);
+});
+initFromHash();
+</script>
+
+<!-- Service Worker 注册（PWA 离线支持） -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).then(function(reg) {
+      console.log('SW registered:', reg.scope);
+    }, function(err) {
+      console.log('SW failed:', err);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
