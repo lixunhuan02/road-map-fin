@@ -13,6 +13,29 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg" />
 <meta name="version" content="v3.0.20260620" /><style>
 :root{--bg:#f8f7f4;--card-bg:#fff;--text-primary:#1a1a2e;--text-secondary:#6b7280;--text-muted:#9ca3af;--gold:#c8a44a;--gold-light:#fef9ed;--gold-border:#e8d5a0;--border:#e5e7eb;--border-light:#f0f0f0;--green:#22c55e;--green-light:#dcfce7;--red:#ef4444;--red-light:#fee2e2;--shadow:0 1px 3px rgba(0,0,0,.04);--shadow-h:0 4px 12px rgba(0,0,0,.06);--radius:12px;--radius-sm:8px;--font-display:Georgia,"PingFang SC","Noto Serif CJK SC",serif;--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;--font-mono:"SF Mono","Menlo","Monaco",monospace;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+/* 字号缩放变量 */
+:root{--scale:1;--fs-h1:24px;--fs-subtitle:12px;--fs-tab:13px;--fs-thread:15px;--fs-card-title:13.5px;--fs-card-body:12px;--fs-section:10px;--fs-badge:10px;--fs-count:10px;--fs-case-box:12px;--fs-practical:12px;--fs-diagram-cap:10px;--fs-footer:11px}
+body.size-m{--fs-h1:26px;--fs-subtitle:13px;--fs-tab:14px;--fs-thread:16px;--fs-card-title:14.5px;--fs-card-body:13px;--fs-section:11px;--fs-badge:11px;--fs-count:11px;--fs-case-box:13px;--fs-practical:13px;--fs-diagram-cap:11px;--fs-footer:12px}
+body.size-l{--fs-h1:28px;--fs-subtitle:14px;--fs-tab:15px;--fs-thread:17px;--fs-card-title:15.5px;--fs-card-body:14px;--fs-section:12px;--fs-badge:12px;--fs-count:12px;--fs-case-box:14px;--fs-practical:14px;--fs-diagram-cap:12px;--fs-footer:13px}
+/* 深色模式 */
+body.dark{--bg:#121418;--card-bg:#1c1e24;--text-primary:#e2e4e9;--text-secondary:#9ca3af;--text-muted:#6b7280;--gold:#d4a843;--gold-light:#252010;--gold-border:#3a3020;--border:#2e3038;--border-light:#262830;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-h:0 4px 12px rgba(0,0,0,.4);--green:#2dab5e;--red:#e5484d}
+body.dark .icon.fundamental{background:#1e2040;color:#818cf8}
+body.dark .icon.technical{background:#2a2515;color:#fbbf24}
+body.dark .icon.integration{background:#14281a;color:#34d399}
+body.dark .practical-box{background:#1a1f3a;color:#a5b4fc}
+body.dark .ref-box{background:#1e1a30;color:#c4b5fd}
+body.dark .combo-box{background:#0f2618;color:#6ee7b7}
+body.dark .case-box{background:#1e1808;color:#d4a843}
+body.dark .boundary-box{background:#1c1c20;color:#9ca3af}
+body.dark .global-progress{background:#1c1e24}
+body.dark .tabs{background:rgba(28,30,36,.92)}
+body.dark .diagram-box{background:#16181c}
+body.dark .diagram-box svg rect[fill="#fafaf8"]{fill:#16181c}
+body.dark .diagram-box svg text[fill="#374151"]{fill:#d1d5db}
+body.dark .diagram-box svg text[fill="#9ca3af"]{fill:#6b7280}
+body.dark .diagram-box svg line{stroke:#333!important}
+body.dark .header{background:#1c1e24;border-bottom-color:#262830}
+body.dark .header::after{opacity:.3}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:calc(40px + var(--safe-bottom));overflow-x:hidden}
@@ -119,11 +142,42 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="bar"><div class="fill" id="globalProgressFill"></div></div>
     <span class="pct" id="globalPct">0%</span>
   </div>
-  <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-    <span class="badge">v3.0</span>
-    <span class="badge" id="cacheBadge" style="cursor:pointer" onclick="clearCacheAndReload()">🗑️ 清除缓存刷新</span>
+  <div style="display:flex;gap:6px;margin-top:4px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+    <span></span>
+    <span style="font-size:20px;cursor:pointer;opacity:.5;transition:opacity .2s" onclick="toggleSettings()" ontouchstart="" id="settingsBtn">⚙️</span>
   </div>
 </header>
+
+<!-- 设置面板 -->
+<div id="settingsPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)" onclick="closeSettings(event)">
+  <div style="position:absolute;top:60px;left:16px;right:16px;max-width:468px;margin:0 auto;background:var(--card-bg);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:20px;animation:slideDown .25s ease" onclick="event.stopPropagation()" id="settingsInner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-light)">
+      <span style="font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--text-primary)">设置</span>
+      <span style="font-size:22px;cursor:pointer;opacity:.4" onclick="closeSettings()">✕</span>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;letter-spacing:.3px">🔤 字体大小</div>
+      <div style="display:flex;gap:8px">
+        <span class="size-btn" data-size="s" onclick="setFontSize('s')" style="flex:1;text-align:center;padding:8px;border-radius:8px;border:2px solid var(--border);font-size:12px;cursor:pointer;color:var(--text-secondary);font-weight:500;transition:all .2s">小</span>
+        <span class="size-btn active" data-size="m" onclick="setFontSize('m')" style="flex:1;text-align:center;padding:8px;border-radius:8px;border:2px solid var(--gold);font-size:14px;cursor:pointer;color:var(--gold);font-weight:600;transition:all .2s">中</span>
+        <span class="size-btn" data-size="l" onclick="setFontSize('l')" style="flex:1;text-align:center;padding:8px;border-radius:8px;border:2px solid var(--border);font-size:16px;cursor:pointer;color:var(--text-secondary);font-weight:500;transition:all .2s">大</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;letter-spacing:.3px">🎨 主题模式</div>
+      <div style="display:flex;gap:8px">
+        <span class="theme-btn active" data-theme="light" onclick="setTheme('light')" style="flex:1;text-align:center;padding:8px 12px;border-radius:8px;border:2px solid var(--gold);cursor:pointer;font-size:13px;color:var(--gold);font-weight:600;transition:all .2s">☀️ 浅色</span>
+        <span class="theme-btn" data-theme="dark" onclick="setTheme('dark')" style="flex:1;text-align:center;padding:8px 12px;border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;color:var(--text-secondary);font-weight:500;transition:all .2s">🌙 深色</span>
+      </div>
+    </div>
+
+    <div style="padding-top:12px;border-top:1px solid var(--border-light)">
+      <div style="font-size:11px;color:var(--text-muted);cursor:pointer;text-align:center;padding:6px" onclick="clearCacheAndReload()">🗑️ 清除缓存并刷新</div>
+    </div>
+  </div>
+</div>
 
 <nav class="tabs" id="tabs">
   <button class="tab active" data-module="stocks">股票</button>
@@ -586,6 +640,90 @@ initProgress().then(() => {
   updateAllProgress();
 });
 
+// ======================== 设置系统（字号 + 主题 + 面板） ========================
+(function() {
+  var sizeCSS = {
+    s: '.header h1{font-size:20px!important}.header .subtitle{font-size:10px!important}.tabs .tab{font-size:11px!important;padding:10px 4px 8px!important}.thread-header h2{font-size:13px!important}.card-header .title{font-size:12px!important}.card-body .brief{font-size:11px!important}.card-body .practical-box,.card-body .ref-box,.card-body .combo-box,.card-body .case-box,.card-body .boundary-box{font-size:10.5px!important}.card-body .section-label{font-size:9px!important}.global-progress{font-size:9px!important}',
+    m: '.header h1{font-size:24px!important}.header .subtitle{font-size:12px!important}.tabs .tab{font-size:13px!important}.thread-header h2{font-size:15px!important}.card-header .title{font-size:13.5px!important}.card-body .brief{font-size:12.5px!important}.card-body .practical-box,.card-body .ref-box,.card-body .combo-box,.card-body .case-box,.card-body .boundary-box{font-size:12px!important}.card-body .section-label{font-size:10px!important}.global-progress{font-size:11px!important}',
+    l: '.header h1{font-size:28px!important}.header .subtitle{font-size:14px!important}.tabs .tab{font-size:15px!important;padding:14px 8px 12px!important}.thread-header h2{font-size:17px!important}.card-header .title{font-size:15.5px!important}.card-body .brief{font-size:14px!important}.card-body .practical-box,.card-body .ref-box,.card-body .combo-box,.card-body .case-box,.card-body .boundary-box{font-size:13.5px!important}.card-body .section-label{font-size:11px!important}.global-progress{font-size:12px!important}'
+  };
+  var styleEl = null;
+  function applySizeCSS(css) {
+    if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'font-size-override'; document.head.appendChild(styleEl); }
+    styleEl.textContent = css;
+  }
+
+  // 恢复保存的设置
+  var savedSize = localStorage.getItem('tradeMapFontSize') || 'm';
+  var savedTheme = localStorage.getItem('tradeMapTheme') || 'light';
+  applySizeCSS(sizeCSS[savedSize] || sizeCSS.m);
+  if (savedTheme === 'dark') document.body.classList.add('dark');
+
+  // === 全局函数 ===
+
+  // 字号
+  window.setFontSize = function(size) {
+    localStorage.setItem('tradeMapFontSize', size);
+    applySizeCSS(sizeCSS[size] || sizeCSS.m);
+    // 刷新设置面板按钮状态
+    document.querySelectorAll('.size-btn').forEach(function(b) {
+      var active = b.dataset.size === size;
+      b.style.borderColor = active ? 'var(--gold)' : 'var(--border)';
+      b.style.color = active ? 'var(--gold)' : 'var(--text-secondary)';
+      b.style.fontWeight = active ? '600' : '500';
+    });
+  };
+
+  // 主题
+  window.setTheme = function(theme) {
+    localStorage.setItem('tradeMapTheme', theme);
+    document.body.classList.toggle('dark', theme === 'dark');
+    // 刷新 meta theme-color
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = theme === 'dark' ? '#121418' : '#1a1a2e';
+    // 刷新设置面板按钮
+    document.querySelectorAll('.theme-btn').forEach(function(b) {
+      var active = b.dataset.theme === theme;
+      b.style.borderColor = active ? 'var(--gold)' : 'var(--border)';
+      b.style.color = active ? 'var(--gold)' : 'var(--text-secondary)';
+      b.style.fontWeight = active ? '600' : '500';
+    });
+  };
+
+  // 设置面板
+  window.toggleSettings = function() {
+    var panel = document.getElementById('settingsPanel');
+    var isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'block';
+    document.body.style.overflow = isOpen ? '' : 'hidden';
+    // 同步按钮状态
+    if (!isOpen) syncSettingBtns();
+  };
+  window.closeSettings = function(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('settingsPanel').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  // 同步设置面板按钮的高亮状态
+  function syncSettingBtns() {
+    var curSize = localStorage.getItem('tradeMapFontSize') || 'm';
+    var curTheme = localStorage.getItem('tradeMapTheme') || 'light';
+    document.querySelectorAll('.size-btn').forEach(function(b) {
+      var active = b.dataset.size === curSize;
+      b.style.borderColor = active ? 'var(--gold)' : 'var(--border)';
+      b.style.color = active ? 'var(--gold)' : 'var(--text-secondary)';
+      b.style.fontWeight = active ? '600' : '500';
+    });
+    document.querySelectorAll('.theme-btn').forEach(function(b) {
+      var active = b.dataset.theme === curTheme;
+      b.style.borderColor = active ? 'var(--gold)' : 'var(--border)';
+      b.style.color = active ? 'var(--gold)' : 'var(--text-secondary)';
+      b.style.fontWeight = active ? '600' : '500';
+    });
+  }
+})();
+
 // PWA Service Worker 注册 + 更新检测
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -609,24 +747,17 @@ if ('serviceWorker' in navigator) {
 
 // 清除所有缓存并强制刷新
 function clearCacheAndReload() {
-  const badge = document.getElementById('cacheBadge');
-  badge.textContent = '⏳ 清理中...';
+  closeSettings();
   if ('caches' in window) {
     caches.keys().then(function(names) {
-      return Promise.all(names.map(function(name) {
-        return caches.delete(name);
-      }));
+      return Promise.all(names.map(function(name) { return caches.delete(name); }));
     }).then(function() {
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.getRegistration().then(function(reg) {
-          if (reg) reg.unregister();
-        });
+        navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.unregister(); });
       }
-      badge.textContent = '✅ 已清理，正在刷新...';
-      setTimeout(function() { window.location.reload(true); }, 500);
-    }).catch(function(e) {
-      badge.textContent = '❌ 清理失败，手动刷新';
-      console.error(e);
+      window.location.reload(true);
+    }).catch(function() {
+      window.location.reload(true);
     });
   } else {
     window.location.reload(true);
